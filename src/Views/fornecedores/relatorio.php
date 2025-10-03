@@ -1,9 +1,24 @@
 <?php
 use Dompdf\Dompdf;
 
-$html = '<h2>Relatório de Fornecedores</h2>';
-$html .= '<table border="1" width="100%" cellspacing="0" cellpadding="5">';
-$html .= '<tr><th>Nome</th><th>CNPJ</th><th>Email</th><th>Telefone</th></tr>';
+require __DIR__ . '/../../../vendor/autoload.php';
+
+$html = '
+<table width="100%">
+    <tr>
+        <td align="center"><strong>Sistema SysFin - Gestão Financeira</strong></td>
+    </tr>
+</table>
+
+<h2 align="center">Relatório de Fornecedores</h2>
+
+<table border="1" width="100%" cellspacing="0" cellpadding="5">
+    <tr>
+        <th>Nome</th>
+        <th>CNPJ</th>
+        <th>Email</th>
+        <th>Telefone</th>
+    </tr>';
 
 foreach ($fornecedores as $f) {
     $html .= '<tr>';
@@ -16,7 +31,16 @@ foreach ($fornecedores as $f) {
 
 $html .= '</table>';
 
-require __DIR__ . '/../../../vendor/autoload.php';
+// Rodapé com data e hora no canto inferior direito
+date_default_timezone_set('America/Sao_Paulo');
+
+$html .= '
+<br><br><table width="100%">
+    <tr>
+        <td align="right">Gerado em: ' . date('d/m/Y H:i:s') . '</td>
+    </tr>
+</table>';
+
 
 $dompdf = new Dompdf();
 $dompdf->loadHtml($html);

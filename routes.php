@@ -16,4 +16,5 @@ return function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/fornecedores/relatorio', ['App\Controllers\FornecedorController', 'report']);
     
     
+    
 };

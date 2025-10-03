@@ -17,7 +17,9 @@ composer install
 ## Para contribuir com esse projeto
 * crie um novo branch, a partir do branch __develop__  
 `git checkout develop`  
-`git checkout -b <nome_branch>`  
+`git checkout -b <nome_branch>`
+`git config --local user.email "seu_email"`
+`git config --local user.name "seu_username"`
 
 * ao terminar sua contribuição, faça __push__ para o servidor remoto no branch que você criou. Por exemplo:  
 `git add .`  

@@ -1,73 +1,86 @@
+<?php
+/**
+ * Variáveis esperadas do Controller:
+ * @var array $fornecedores Lista de objetos de fornecedores.
+ * @var array $produtos Lista de objetos de produtos.
+ * @var array $itens_compra Itens atualmente na compra (da sessão).
+ * @var float $total_compra Valor total da compra.
+ * @var int|null $selected_fornecedor_id ID do fornecedor já selecionado.
+ */
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Compras</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
+    </head>
 <body>
-
     <div class="container">
         <h1>Tela de Registro de Compras</h1>
 
-        <form id="form-compra" action="api/salvar_compra.php" method="POST">
-
+        <form action="/compras/registrar" method="POST">
+            
             <div class="form-group">
                 <label for="fornecedor">Fornecedor:</label>
                 <select id="fornecedor" name="fornecedor_id" required>
-                    <option value="">Carregando...</option>
-                    </select>
+                    <option value="">Selecione um fornecedor</option>
+                    <?php foreach ($fornecedores ?? [] as $fornecedor): ?>
+                        <option value="<?= htmlspecialchars($fornecedor->id) ?>" 
+                            <?= ($selected_fornecedor_id ?? null) == $fornecedor->id ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($fornecedor->nome) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <fieldset>
                 <legend>Adicionar Item</legend>
-                <div class="item-form">
-                    <div class="form-group">
-                        <label for="produto">Produto:</label>
-                        <select id="produto">
-                           <option value="">Carregando...</option>
-                           </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="quantidade">Quantidade:</label>
-                        <input type="number" id="quantidade" value="1" min="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="valor_unitario">Valor Unitário (R$):</label>
-                        <input type="number" id="valor_unitario" step="0.01" min="0">
-                    </div>
-                    <button type="button" id="btn-adicionar">Adicionar</button>
-                </div>
+                <label>Produto: 
+                    <select name="produto_id">
+                       <option value="">Selecione</option>
+                       <?php foreach ($produtos ?? [] as $produto): ?>
+                            <option value="<?= htmlspecialchars($produto->id) ?>">
+                                <?= htmlspecialchars($produto->nome) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label>Quantidade: <input type="number" name="quantidade" value="1" min="1"></label>
+                <label>Valor Unitário (R$): <input type="text" name="valor_unitario" placeholder="10,50"></label>
+                
+                <button type="submit" name="action" value="add_item">Adicionar</button>
             </fieldset>
 
             <h2>Itens da Compra</h2>
-            <table id="tabela-itens">
+            <table border="1" style="width:100%; border-collapse: collapse;">
                 <thead>
-                    <tr>
-                        <th>Produto</th>
-                        <th>Qtd.</th>
-                        <th>Vlr. Unitário</th>
-                        <th>Subtotal</th>
-                        <th>Ação</th>
-                    </tr>
+                    <tr><th>Produto</th><th>Qtd.</th><th>Vlr. Unitário</th><th>Subtotal</th><th>Ação</th></tr>
                 </thead>
                 <tbody>
-                    </tbody>
+                    <?php if (empty($itens_compra)): ?>
+                        <tr><td colspan="5" style="text-align:center;">Nenhum item adicionado.</td></tr>
+                    <?php else: ?>
+                        <?php foreach ($itens_compra as $index => $item): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($item['nome']) ?></td>
+                                <td><?= htmlspecialchars($item['quantidade']) ?></td>
+                                <td>R$ <?= number_format($item['valor_unitario'], 2, ',', '.') ?></td>
+                                <td>R$ <?= number_format($item['subtotal'], 2, ',', '.') ?></td>
+                                <td><a href="/compras/registrar?action=remove_item&index=<?= $index ?>">Remover</a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
             </table>
 
             <div class="total-section">
                 <h2>VALOR TOTAL DA COMPRA:</h2>
-                <span id="valor-total">R$ 0,00</span>
+                <span>R$ <?= number_format($total_compra ?? 0, 2, ',', '.') ?></span>
             </div>
             
-            <button type="submit" class="btn-finalizar">Finalizar Compra</button>
-
+            <button type="submit" name="action" value="finalize" class="btn-finalizar">Finalizar Compra</button>
         </form>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/scripts.js"></script>
-
 </body>
 </html>

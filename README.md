@@ -27,3 +27,4 @@ composer install
 `git push -u origin <nome_branch>`  
 
 * crie um novo __PULL REQUEST__ no repositório, para que o seu branch seja analisado e, se estiver correto, seja adicionado ao branch __develop__ pelo gerente do projeto.
+

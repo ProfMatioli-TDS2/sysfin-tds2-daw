@@ -7,14 +7,16 @@
     <title>SysFin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/estilo.css">
+
 </head>
 
 <body class="d-flex flex-column min-vh-100">
 
-<nav class="navbar navbar-expand-lg navbar-light bg-custom-color mb-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-custom-color mb-4">
         <div class="container">
-            <a class="navbar-brand" href="<?php echo BASE_URL;?>">SysFin</a>
+            <a class="navbar-brand" href="<?php echo BASE_URL; ?>">SysFin</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -27,6 +29,7 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#">Plano de Contas</a></li>
                             <li><a class="dropdown-item" href="clientes">Clientes</a></li>
+                            <li><a class="dropdown-item" href="fornecedores">Fornecedores</a></li>
                             <li><a class="dropdown-item" href="#">Produtos</a></li>
                         </ul>
                     </li>

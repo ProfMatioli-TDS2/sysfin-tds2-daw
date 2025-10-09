@@ -6,4 +6,15 @@ return function (FastRoute\RouteCollector $r) {
     
     //clientes;
     $r->addRoute('GET', '/clientes', [ 'App\Controllers\ClienteController', 'index']);
+
+
+    //fornecedores;
+    $r->addRoute('GET', '/fornecedores', ['App\Controllers\FornecedorController', 'index']);
+    $r->addRoute(['GET', 'POST'], '/fornecedores/criar', ['App\Controllers\FornecedorController', 'create']);
+    $r->addRoute(['GET', 'POST'], '/fornecedores/editar/{id:\d+}', ['App\Controllers\FornecedorController', 'edit']);
+    $r->addRoute('POST', '/fornecedores/excluir/{id:\d+}', ['App\Controllers\FornecedorController', 'delete']);
+    $r->addRoute('GET', '/fornecedores/relatorio', ['App\Controllers\FornecedorController', 'report']);
+    
+    
+    
 };

@@ -36,7 +36,10 @@
                     <td><?= htmlspecialchars($f->telefone) ?></td>
                     <td>
                         <a class="btn btn-warning btn-sm" href="/fornecedores/editar/<?= $f->id ?>">Editar</a>
-                        <a class="btn btn-danger btn-sm" href="/fornecedores/excluir/<?= $f->id ?>" onclick="return confirm('Tem certeza?')">Excluir</a>
+                        <form method="POST" action="/fornecedores/excluir/<?= $f->id ?>" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
+                            <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                        </form>
+
                     </td>
                 </tr>
             <?php endforeach; ?>

@@ -1,5 +1,5 @@
 <?php
-// Retorna uma função que define todas as rotas para o dispatcher
+// Retorna uma função que define todas as rotas para o dispatcher.
 return function (FastRoute\RouteCollector $r) {
     //home;
     $r->addRoute('GET', '/', ['App\Controllers\HomeController', 'index']);

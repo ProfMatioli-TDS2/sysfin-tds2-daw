@@ -8,7 +8,7 @@ use App\Models\Fornecedor;
  * Implementa as operações de CRUD e geração de relatório.
  * 
  * IMPORTANTE:
- * A verificação de acesso por perfil 'Administrador' depende da implementação da Tarefa 16. oi
+ * A verificação de acesso por perfil 'Administrador' depende da implementação da Tarefa 16.
  * A variável de sessão $_SESSION['perfil'] deve ser definida no login.
  */
 

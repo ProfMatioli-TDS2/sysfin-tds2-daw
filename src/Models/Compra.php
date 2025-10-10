@@ -19,7 +19,7 @@ class Compra
                 $this->conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
                 $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $e) {
-                // Em ambiente de produção, não use 'die()'. Use error_log()
+                
                 die("Erro de Conexão com o Banco de Dados: " . $e->getMessage());
             }
         }

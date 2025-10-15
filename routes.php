@@ -1,5 +1,5 @@
 <?php
-// Retorna uma função que define todas as rotas para o dispatcher
+// Retorna uma função que define todas as rotas para o dispatcher.
 return function (FastRoute\RouteCollector $r) {
     //home;
     $r->addRoute('GET', '/', ['App\Controllers\HomeController', 'index']);
@@ -14,7 +14,12 @@ return function (FastRoute\RouteCollector $r) {
     $r->addRoute(['GET', 'POST'], '/fornecedores/editar/{id:\d+}', ['App\Controllers\FornecedorController', 'edit']);
     $r->addRoute('POST', '/fornecedores/excluir/{id:\d+}', ['App\Controllers\FornecedorController', 'delete']);
     $r->addRoute('GET', '/fornecedores/relatorio', ['App\Controllers\FornecedorController', 'report']);
+<<<<<<< HEAD
     
     
     
+=======
+    $r->addRoute(['GET', 'POST'], '/compras/registrar', ['App\Controllers\CompraController', 'registrar']);
+    $r->addRoute(['GET', 'POST'], '/compras/relatorio', ['App\Controllers\CompraController', 'report']);
+>>>>>>> develop
 };

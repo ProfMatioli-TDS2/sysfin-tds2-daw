@@ -1,14 +1,17 @@
 <?php
-// App/Controllers/ClienteController.php 
 namespace App\Controllers;
-use App\Models\Cliente;
+
+use App\Models\Cliente; 
+
 class ClienteController
 {
     public function index()
     {
-        $clientes = Cliente::getAll();
+        $nome = $_GET['busca'] ?? '';
+        $clientes = $nome ? Cliente::searchByName($nome) : Cliente::getAll();
         require __DIR__ . '/../Views/cliente/index.php';
     }
+
     public function create()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -19,13 +22,16 @@ class ClienteController
             $cliente->telefone = $_POST['telefone'];
             $cliente->save();
             header('Location: /clientes');
-        } else {
-            require __DIR__ . '/../Views/cliente/create.php';
+            exit;
         }
+
+        require __DIR__ . '/../Views/cliente/create.php';
     }
+
     public function edit($id)
     {
         $cliente = Cliente::getById($id);
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $cliente->nome = $_POST['nome'];
             $cliente->cpf_cnpj = $_POST['cpf_cnpj'];
@@ -33,13 +39,22 @@ class ClienteController
             $cliente->telefone = $_POST['telefone'];
             $cliente->save();
             header('Location: /clientes');
-        } else {
-            require __DIR__ . '/../Views/cliente/edit.php';
+            exit;
         }
+
+        require __DIR__ . '/../Views/cliente/edit.php';
     }
+
     public function delete($id)
     {
         Cliente::delete($id);
         header('Location: /clientes');
+        exit;
+    }
+
+    public function report()
+    {
+        $clientes = Cliente::getAll();
+        require __DIR__ . '/../Views/cliente/report.php';
     }
 }

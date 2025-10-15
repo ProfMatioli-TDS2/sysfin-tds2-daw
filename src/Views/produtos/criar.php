@@ -4,6 +4,7 @@
 
 <form method="POST" action="<?= BASE_URL ?>/index.php?url=/produtos/criar" class="mt-4">
     <div class="mb-3">
+        
         <label for="nome" class="form-label">Nome do Produto:</label>
         <input type="text" name="nome" id="nome" class="form-control" required>
     </div>

@@ -1,4 +1,5 @@
 <?php
+// App/Models/Fornecedor.php
 namespace App\Models;
 
 use App\Core\Database;

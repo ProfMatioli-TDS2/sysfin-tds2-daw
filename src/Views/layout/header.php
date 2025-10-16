@@ -34,7 +34,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/sysfin-4dsn/">Compras</a>
+                        <a class="nav-link" href="compras">Compras</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/sysfin-4dsn/">Vendas</a>

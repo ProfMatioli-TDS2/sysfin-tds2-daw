@@ -27,4 +27,9 @@ return function (FastRoute\RouteCollector $r) {
     $r->addRoute(['GET', 'POST'], '/produtos/editar/{id:\d+}', ['App\Controllers\ProdutoController', 'edit']);
     $r->addRoute('GET', '/produtos/excluir/{id:\d+}', ['App\Controllers\ProdutoController', 'delete']);
     $r->addRoute('GET', '/produtos/relatorio', ['App\Controllers\ProdutoController', 'report']);
+
+    // Estoque
+    $r->addRoute('GET', '/estoque', ['App\Controllers\EstoqueController', 'index']);
+    
+
 };

@@ -1,0 +1,89 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f9;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+.dashboard-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    color: #333;
+}
+
+.card-title {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #666;
+}
+
+.card-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.card.saldo .card-value { color: #007bff; }
+.card.vendas-hoje .card-value { color: #28a745; }
+.card.estoque-baixo .card-value { color: #dc3545; }
+
+.card-link {
+    font-size: 0.9rem;
+    color: #007bff;
+    text-decoration: none;
+}
+.card-link:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para a lista de lançamentos */
+.ultimos-lancamentos {
+    grid-column: 1 / -1; /* Ocupa a largura total na linha */
+}
+
+.lancamentos-lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lancamentos-lista li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.lancamentos-lista li:last-child {
+    border-bottom: none;
+}
+
+
+.lancamentos-lista .descricao {
+    font-size: 0.9rem;
+}
+
+.lancamentos-lista .valor {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.lancamentos-lista .valor.entrada {
+    color: #28a745;
+}
+
+.lancamentos-lista .valor.saida {
+    color: #dc3545;
+}

@@ -44,7 +44,7 @@ class ProdutoController
             header('Location: ' . BASE_URL . '/index.php?url=/produtos');
             exit;
         }
-        require __DIR__ . '/../Views/produtos/editar-produto.php';
+        require __DIR__ . '/../Views/produtos/editar.php';
     }
 
     public function delete($id)

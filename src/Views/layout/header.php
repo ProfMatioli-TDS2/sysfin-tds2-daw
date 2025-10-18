@@ -31,6 +31,7 @@
                             <li><a class="dropdown-item" href="clientes">Clientes</a></li>
                             <li><a class="dropdown-item" href="fornecedores">Fornecedores</a></li>
                             <li><a class="dropdown-item" href="#">Produtos</a></li>
+                            <li><a class="dropdown-item" href="relatorio">Relatorio de Movimento Caixa</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

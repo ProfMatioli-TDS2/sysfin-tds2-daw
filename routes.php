@@ -15,6 +15,8 @@ return function (FastRoute\RouteCollector $r) {
     $r->addRoute('POST', '/fornecedores/excluir/{id:\d+}', ['App\Controllers\FornecedorController', 'delete']);
     $r->addRoute('GET', '/fornecedores/relatorio', ['App\Controllers\FornecedorController', 'report']);
     
+    //relatorios;
+    $r->addRoute('GET', '/relatorio', [ 'App\Controllers\RelatorioController', 'index']);
     
     
 };

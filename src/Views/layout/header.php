@@ -39,6 +39,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/sysfin-4dsn/">Vendas</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="estoque">Estoque</a>
+                    </li>
                 </ul>
 
                 <ul class="navbar-nav ms-auto">

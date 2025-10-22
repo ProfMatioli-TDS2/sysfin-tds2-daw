@@ -29,8 +29,12 @@ class CompraController
 
     public function registrar()
     {
-        
-        $this->renderView('compras/registrar');
+        $data = [
+            'fornecedores' => \App\Models\Fornecedor::getAll(),
+            'produtos' => \App\Models\Produto::getAll(),
+        ];
+
+        $this->renderView('compras/registrar', $data);
     }
 
     public function report()

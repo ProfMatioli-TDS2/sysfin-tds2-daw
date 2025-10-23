@@ -6,4 +6,11 @@ return function (FastRoute\RouteCollector $r) {
     
     //clientes;
     $r->addRoute('GET', '/clientes', [ 'App\Controllers\ClienteController', 'index']);
+
+    // relatorio de vendas
+    
+    $r->addRoute('GET', '/relatorio-vendas', ['App\Controllers\RelatorioVendasController', 'form']);
+    $r->addRoute('POST', '/relatorio-vendas/gerar', ['App\Controllers\RelatorioVendasController', 'gerar']);
+    
+
 };

@@ -28,6 +28,7 @@
                             <li><a class="dropdown-item" href="#">Plano de Contas</a></li>
                             <li><a class="dropdown-item" href="clientes">Clientes</a></li>
                             <li><a class="dropdown-item" href="#">Produtos</a></li>
+                            <li><a class="dropdown-item" href="relatorio-vendas">Relatorio de vendas</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

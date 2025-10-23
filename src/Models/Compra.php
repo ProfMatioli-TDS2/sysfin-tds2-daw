@@ -24,6 +24,69 @@ class Compra
             }
         }
 
+        public static function registrarCompra($idFornecedor, $itens, $valorTotal) {
+
+            if (empty($itens) || !is_array($itens)) {
+                throw new Exception("Nenhum item informado para a compra.");
+            }
+
+            $pdo = Database::getConnection();
+
+            try {
+                $pdo->beginTransaction();
+
+                $stmtVenda = $pdo->prepare("
+                    INSERT INTO compras (id_fornecedor, data_compra, valor_total)
+                    VALUES (:id_fornecedor, NOW(), :valor_total)
+                ");
+                $stmtVenda->execute([
+                    ':id_fornecedor' => $idFornecedor,
+                    ':valor_total' => $valorTotal
+                ]);
+                $idVenda = $pdo->lastInsertId();
+
+                foreach ($itens as $item) {
+                    $stmtItem = $pdo->prepare("
+                        INSERT INTO itens_compra (id_compra, id_produto, quantidade, valor_unitario)
+                        VALUES (:id_compra, :id_produto, :quantidade, :valor_unitario)
+                    ");
+                    $stmtItem->execute([
+                        ':id_compra' => $idVenda,
+                        ':id_produto' => $item['id_produto'],
+                        ':quantidade' => $item['quantidade'],
+                        ':valor_unitario' => $item['valor_unitario']
+                    ]);
+
+                    $stmtEstoque = $pdo->prepare("
+                        UPDATE produtos
+                        SET estoque_atual = estoque_atual + :qtd
+                        WHERE id = :id_produto
+                    ");
+                    $stmtEstoque->execute([
+                        ':qtd' => $item['quantidade'],
+                        ':id_produto' => $item['id_produto']
+                    ]);
+                }
+
+                $stmtCaixa = $pdo->prepare("
+                    INSERT INTO movimento_caixa (data_movimento, descricao, id_plano_de_contas, tipo, valor, id_compra)
+                    VALUES (NOW(), 'Compra de Mercadorias', 2, 'S', :valor, :id_compra)
+                ");
+                $stmtCaixa->execute([
+                    ':valor' => $valorTotal,
+                    ':id_compra' => $idVenda
+                ]);
+
+                $pdo->commit();
+
+                return $idVenda;
+
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                throw new Exception("Erro ao registrar compra: " . $e->getMessage());
+            }
+        }
+
     public function getComprasByPeriod($dataInicial, $dataFinal)
     {
         

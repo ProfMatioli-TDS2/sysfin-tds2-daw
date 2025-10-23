@@ -27,14 +27,27 @@ class CompraController
         }
     }
 
-    public function registrar()
-    {
+    public function registrar() {
         $data = [
             'fornecedores' => \App\Models\Fornecedor::getAll(),
             'produtos' => \App\Models\Produto::getAll(),
         ];
-
         $this->renderView('compras/registrar', $data);
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $idFornecedor = $_POST['id_fornecedor'];
+            $itens = $_POST['itens'];
+            $valorTotal = $_POST['valor_total'];
+
+            try {
+                Compra::registrarCompra($idFornecedor, $itens, $valorTotal);
+                exit;
+            } catch (\Exception $e) {
+                echo "<h3>Erro: " . $e->getMessage() . "</h3>";
+            }
+        } else {
+            require __DIR__ . '/../Views/compras/registrar.php';
+        }
     }
 
     public function report()

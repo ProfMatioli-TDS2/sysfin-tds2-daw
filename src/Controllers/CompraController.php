@@ -32,6 +32,7 @@ class CompraController
             'fornecedores' => \App\Models\Fornecedor::getAll(),
             'produtos' => \App\Models\Produto::getAll(),
         ];
+        $this->renderView('compras/registrar', $data);
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $idFornecedor = $_POST['id_fornecedor'];

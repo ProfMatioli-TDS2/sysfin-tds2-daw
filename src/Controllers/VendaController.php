@@ -24,7 +24,7 @@ class VendaController
 
         $clientes = Cliente::getAll();
         $produtos = Produto::getAll();
-        require __DIR__ . '/../Views/vendas/create.php';
+        require __DIR__ . '/../Views/venda/create.php';
     }
 
     private function store()

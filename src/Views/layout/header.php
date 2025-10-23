@@ -36,23 +36,13 @@
                     <li class="nav-item">
                         <a class="nav-link" href="compras">Compras</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/sysfin-4dsn/">Vendas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="estoque">Estoque</a>
-                    </li>
-                </ul>
-
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-person-fill"></i> Entrar
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container flex-grow-1">
+                    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Vendas
+    </a>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>index.php?url=/vendas">Listar Vendas</a></li>
+        <li><a class="dropdown-item"href="<?php echo BASE_URL; ?>index.php?url=/vendas/create">Registrar Nova Venda</a></li>
+    </ul>
+</li>
+                  

@@ -45,17 +45,4 @@
         <li><a class="dropdown-item"href="<?php echo BASE_URL; ?>index.php?url=/vendas/create">Registrar Nova Venda</a></li>
     </ul>
 </li>
-                </ul>
-
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-person-fill"></i> Entrar
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container flex-grow-1">
+                  

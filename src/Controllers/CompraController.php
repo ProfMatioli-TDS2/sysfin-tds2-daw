@@ -28,6 +28,11 @@ class CompraController
     }
 
     public function registrar() {
+        $data = [
+            'fornecedores' => \App\Models\Fornecedor::getAll(),
+            'produtos' => \App\Models\Produto::getAll(),
+        ];
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $idFornecedor = $_POST['id_fornecedor'];
             $itens = $_POST['itens'];

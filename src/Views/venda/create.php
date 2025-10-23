@@ -1,4 +1,5 @@
 <?php 
+// 1. CHAMA O HEADER (que já tem o menu, o <head>, e abre o <main class="container">)
 require __DIR__ . '/../layout/header.php'; 
 ?>
 
@@ -39,7 +40,7 @@ require __DIR__ . '/../layout/header.php';
                 </div>
                 <div class="col-md-3">
                     <label for="valor-unitario" class="form-label">Valor Unitário (R$):</label>
-                    <input type="number" id="valor-unitario" class="form-control" step="0.01" min="0">
+                    <input type="number" id="valor-unitario" class="form-control" step="0.01" min="0" readonly>
                 </div>
                 <div class="col-md-3">
                     <label for="quantidade" class="form-label">Quantidade:</label>
@@ -83,47 +84,61 @@ require __DIR__ . '/../layout/header.php';
 
 
 <script>
-
+    // --- ESTADO DA SUA APLICAÇÃO (TAREFA #8) ---
     let itensDaVenda = []; 
-    let produtoInfoCache = {}; 
+    let produtoInfoCache = {}; // Cache para guardar infos (id, nome, estoque, preco)
 
+    // --- ELEMENTOS DO HTML (DOM) ---
     const form = document.getElementById('venda-form');
     const selectCliente = document.getElementById('select-cliente');
     const selectProduto = document.getElementById('select-produto');
     const inputValorUnitario = document.getElementById('valor-unitario');
     const inputQuantidade = document.getElementById('quantidade');
     const estoqueAviso = document.getElementById('estoque-aviso');
-    
     const btnAdicionar = document.getElementById('btn-adicionar');
-    
     const tabelaItensBody = document.querySelector('#itens-venda-tabela tbody');
     const spanValorTotal = document.getElementById('valor-total-venda');
     const hiddenItensContainer = document.getElementById('hidden-itens-container');
 
     // --- FUNÇÕES DE LÓGICA (TAREFA #8) ---
 
+    /**
+     * FUNÇÃO ATUALIZADA
+     * Agora salva o PREÇO no cache (produtoInfoCache)
+     */
     function buscarDetalhesProduto() {
-        produtoInfoCache = {};
+        produtoInfoCache = {}; // Limpa o cache
         estoqueAviso.textContent = "";
         const selectedOption = selectProduto.options[selectProduto.selectedIndex];
-        if (!selectedOption.value) {
+        
+        if (!selectedOption.value) { // Se for "Selecione..."
             inputValorUnitario.value = "";
             return;
         }
+
         const preco = selectedOption.getAttribute('data-preco');
         const estoque = selectedOption.getAttribute('data-estoque');
+
+        // 1. Preenche o input (que agora é readonly)
         inputValorUnitario.value = parseFloat(preco).toFixed(2);
+        
+        // 2. Salva TUDO no cache
         produtoInfoCache = {
             id: selectedOption.value,
             nome: selectedOption.text,
-            estoque_atual: parseInt(estoque)
+            estoque_atual: parseInt(estoque),
+            preco_venda: parseFloat(preco) // <-- MUDANÇA: Salva o preço aqui
         };
+
         validarEstoque();
     }
 
     function validarEstoque() {
         if (!produtoInfoCache.id) return true; 
-        const quantidadeDesejada = parseInt(inputQuantidade.value);
+        let quantidadeDesejada = parseInt(inputQuantidade.value);
+        if (isNaN(quantidadeDesejada)) {
+            quantidadeDesejada = 0;
+        }
         const estoqueDisponivel = produtoInfoCache.estoque_atual;
         if (quantidadeDesejada > estoqueDisponivel) {
             estoqueAviso.textContent = `Estoque disponível: ${estoqueDisponivel} un.`;
@@ -134,21 +149,54 @@ require __DIR__ . '/../layout/header.php';
         }
     }
 
+    /**
+     * FUNÇÃO ATUALIZADA
+     * Pega o valor unitário do 'produtoInfoCache' (seguro)
+     * Remove a validação de valor (desnecessária agora)
+     */
     function adicionarItem() {
+        
+        // 1. Valida se um cliente foi selecionado
+        if (!selectCliente.value) {
+            alert("Por favor, selecione um cliente antes de adicionar itens.");
+            selectCliente.focus(); 
+            return;
+        }
+
+        // 2. Valida se um produto foi selecionado
         if (!produtoInfoCache.id) {
             alert("Selecione um produto.");
             return;
         }
+
+        // 3. Valida Estoque
         if (!validarEstoque()) {
             alert("Quantidade maior que o estoque disponível!");
+            inputQuantidade.focus(); 
             return;
         }
+
+        // 4. Valida Quantidade > 0
+        const quantidade = parseInt(inputQuantidade.value);
+        if (isNaN(quantidade) || quantidade <= 0) {
+            alert("A quantidade deve ser um número maior que zero.");
+            inputQuantidade.focus();
+            return;
+        }
+
+        // 5. Pega o Valor Unitário (MUDANÇA AQUI)
+        // Pega o valor do cache, não mais do <input>
+        const valorUnitario = produtoInfoCache.preco_venda;
+        // Não precisamos mais validar o valor, pois ele veio do 'data-preco'
+
+        // Se passou em tudo, cria o item
         const item = {
             produto_id: produtoInfoCache.id,
             produto_nome: produtoInfoCache.nome,
-            quantidade: parseInt(inputQuantidade.value),
-            valor_unitario: parseFloat(inputValorUnitario.value)
+            quantidade: quantidade,
+            valor_unitario: valorUnitario // Usa o valor pego do cache
         };
+
         itensDaVenda.push(item);
         atualizarGridItens();
         atualizarTotalVenda();
@@ -185,12 +233,13 @@ require __DIR__ . '/../layout/header.php';
         spanValorTotal.textContent = total.toFixed(2);
     }
 
+    // Limpa o formulário e o cache
     function limparFormItem() {
         selectProduto.value = "";
         inputValorUnitario.value = "";
         inputQuantidade.value = "1";
         estoqueAviso.textContent = "";
-        produtoInfoCache = {};
+        produtoInfoCache = {}; // Limpa o cache (importante)
     }
 
     function prepararSubmit(event) {
@@ -214,6 +263,7 @@ require __DIR__ . '/../layout/header.php';
         });
     }
 
+    // --- "OUVINTES" DE EVENTOS (Event Listeners) ---
     selectProduto.addEventListener('change', buscarDetalhesProduto);
     inputQuantidade.addEventListener('keyup', validarEstoque);
     inputQuantidade.addEventListener('change', validarEstoque);
@@ -222,5 +272,6 @@ require __DIR__ . '/../layout/header.php';
 </script>
 
 <?php 
+// 3. CHAMA O FOOTER (que tem o copyright e fecha o </main>, </body> e </html>)
 require __DIR__ . '/../layout/footer.php'; 
 ?>

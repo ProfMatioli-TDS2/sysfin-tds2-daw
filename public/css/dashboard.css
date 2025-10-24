@@ -1,89 +1,84 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f9;
-    margin: 0;
-    padding: 20px;
-}
-
-h1 {
-    color: #333;
-}
+/* Este é o arquivo CSS que seu index.php está tentando carregar.
+  Crie este arquivo no caminho: /public/css/dashboard.css
+*/
 
 .dashboard-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 20px; 
+    justify-content: flex-start;
 }
 
 .card {
-    background-color: #ffffff;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     padding: 20px;
-    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    background-color: #fff;
+    flex-basis: 300px; /* Largura mínima para cada card */
+    flex-grow: 1; /* Permite que os cards cresçam para preencher o espaço */
 }
 
-.card-title {
+.card h3 {
     margin-top: 0;
-    font-size: 1rem;
-    color: #666;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
 }
 
-.card-value {
+.card p {
     font-size: 2.2rem;
     font-weight: bold;
-    margin: 10px 0;
+    color: #333;
+    margin: 10px 0 0 0;
 }
 
-.card.saldo .card-value { color: #007bff; }
-.card.vendas-hoje .card-value { color: #28a745; }
-.card.estoque-baixo .card-value { color: #dc3545; }
+/* --- Cores Específicas dos Cards --- */
 
-.card-link {
-    font-size: 0.9rem;
-    color: #007bff;
-    text-decoration: none;
-}
-.card-link:hover {
-    text-decoration: underline;
+.card.saldo p {
+    color: #007bff; /* Azul */
 }
 
-/* Estilos para a lista de lançamentos */
-.ultimos-lancamentos {
-    grid-column: 1 / -1; /* Ocupa a largura total na linha */
+.card.vendido-hoje p {
+    color: #28a745; /* Verde */
 }
 
-.lancamentos-lista {
+.card.estoque-baixo p {
+    color: #dc3545; /* Vermelho */
+    font-size: 2.2rem; /* Mantém o tamanho padrão */
+}
+
+/* --- Estilo da Lista de Lançamentos --- */
+
+.card.lancamentos ul {
     list-style: none;
-    padding: 0;
+    padding-left: 0;
     margin: 0;
 }
-
-.lancamentos-lista li {
+.card.lancamentos li {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    flex-wrap: wrap; /* Permite quebrar linha em telas pequenas */
 }
-
-.lancamentos-lista li:last-child {
+.card.lancamentos li:last-child {
     border-bottom: none;
 }
-
-
-.lancamentos-lista .descricao {
-    font-size: 0.9rem;
-}
-
-.lancamentos-lista .valor {
+.card.lancamentos li span {
     font-weight: bold;
-    font-size: 0.9rem;
+}
+.card.lancamentos li small {
+    color: #777;
+    width: 100%; /* Faz a data ir para a linha de baixo */
+    text-align: right;
+    font-size: 0.8rem;
 }
 
-.lancamentos-lista .valor.entrada {
-    color: #28a745;
+/* Cores para entrada e saída */
+.card.lancamentos li.entrada span {
+    color: #28a745; /* Verde */
 }
-
-.lancamentos-lista .valor.saida {
-    color: #dc3545;
+.card.lancamentos li.saida span {
+    color: #dc3545; /* Vermelho */
 }

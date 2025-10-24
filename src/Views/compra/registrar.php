@@ -1,20 +1,10 @@
-<?php
-/**
- * Variáveis esperadas do Controller:
- * @var array $fornecedores Lista de objetos de fornecedores.
- * @var array $produtos Lista de objetos de produtos.
- * @var array $itens_compra Itens atualmente na compra (da sessão).
- * @var float $total_compra Valor total da compra.
- * @var int|null $selected_fornecedor_id ID do fornecedor já selecionado.
- */
-?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Compras</title>
-    </head>
+</head>
 <body>
     <div class="container">
         <h1>Tela de Registro de Compras</h1>
@@ -53,7 +43,7 @@
             </fieldset>
 
             <h2>Itens da Compra</h2>
-            <table border="1" style="width:100%; border-collapse: collapse;">
+            <table border="1" style="width:100%; border-collapse: collapse; margin-top: 10px;">
                 <thead>
                     <tr><th>Produto</th><th>Qtd.</th><th>Vlr. Unitário</th><th>Subtotal</th><th>Ação</th></tr>
                 </thead>
@@ -74,12 +64,14 @@
                 </tbody>
             </table>
 
-            <div class="total-section">
+            <div class="total-section" style="margin-top: 20px; text-align: right;">
                 <h2>VALOR TOTAL DA COMPRA:</h2>
-                <span>R$ <?= number_format($total_compra ?? 0, 2, ',', '.') ?></span>
+                <span style="font-size: 1.5em; font-weight: bold;">
+                    R$ <?= number_format($total_compra ?? 0, 2, ',', '.') ?>
+                </span>
             </div>
             
-            <button type="submit" name="action" value="finalize" class="btn-finalizar">Finalizar Compra</button>
+            <button type="submit" name="action" value="finalize" class="btn-finalizar" style="margin-top: 20px;">Finalizar Compra</button>
         </form>
     </div>
 </body>

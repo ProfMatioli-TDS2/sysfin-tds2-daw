@@ -71,4 +71,5 @@ class Produto
         $stmt->execute(['nome' => '%' . $nome . '%']);
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
+
 }

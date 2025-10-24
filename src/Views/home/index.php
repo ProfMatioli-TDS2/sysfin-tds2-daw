@@ -1,72 +1,128 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
-<div class="d-flex justify-content-between align-items-center mb-4">
 
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Principal</title>
-    <link rel="stylesheet" href="dashboard.css">
-</head>
-<body>
-    <header>
-        <h1>Dashboard Principal</h1>
-    </header>
-    <main class="dashboard-container">
-        <div class="card saldo">
-            <h2 class="card-title">Saldo Atual em Caixa</h2>
-            <p class="card-value">R$ 1.250,75</p>
-        </div>
+<h1 class="mb-4">Dashboard Principal</h1>
 
-        <div class="card vendas-hoje">
-            <h2 class="card-title">Total Vendido Hoje</h2>
-            <p class="card-value">R$ 480,50</p>
-        </div>
+<main class="dashboard-container">
+    
+    <div class="card saldo">
+        <h3>Saldo do Caixa</h3>
+        <p>R$ <?= number_format($saldoatual, 2, ',', '.') ?></p>
+    </div>
+    
+    <div class="card vendido-hoje">
+        <h3>Total Vendido Hoje</h3>
+        <p>R$ <?= number_format($totalVendidoHoje, 2, ',', '.') ?></p>
+    </div>
+    
+    <div class="card estoque-baixo">
+        <h3>Produtos com Estoque Baixo</h3>
+        <p><?= $estoqueBaixo ?></p>
+    </div>
 
-        <div class="card estoque-baixo">
-            <h2 class="card-title">Produtos com Estoque Baixo</h2>
-            <p class="card-value">8</p>
-            <a href="/produtos/estoque-baixo" class="card-link">Ver produtos</a>
-        </div>
-
-        <div class="card ultimos-lancamentos">
-            <h2 class="card-title">Últimos Lançamentos</h2>
-            <ul class="lancamentos-lista">
-                <li>
-                    <span class="descricao">Venda #1024</span>
-                    <span class="valor entrada">+ R$ 150,00</span>
+    <div class="card lancamentos">
+        <h3>Últimos Lançamentos</h3>
+        <ul>
+            <?php foreach ($ultimosLancamentos as $lancamento): ?>
+                <li class="<?= $lancamento['tipo'] == 'S' ? 'saida' : 'entrada' ?>">
+                    <?= htmlspecialchars($lancamento['descricao']) ?>
+                    
+                    <span>
+                        <?= ($lancamento['tipo'] == 'S' ? '-' : '+') ?>
+                        R$ <?= number_format($lancamento['valor'], 2, ',', '.') ?>
+                    </span>
+                    
+                    <small>
+                        (<?= date('d/m/Y H:i', strtotime($lancamento['data_movimento'])) ?>)
+                    </small>
                 </li>
-                <li>
-                    <span class="descricao">Pagamento Fornecedor XYZ</span>
-                    <span class="valor saida">- R$ 300,00</span>
-                </li>
-                <li>
-                    <span class="descricao">Venda #1023</span>
-                    <span class="valor entrada">+ R$ 55,90</span>
-                </li>
-                <li>
-                    <span class="descricao">Sangria de Caixa</span>
-                    <span class="valor saida">- R$ 100,00</span>
-                </li>
-                 <li>
-                    <span class="descricao">Venda #1022</span>
-                    <span class="valor entrada">+ R$ 25,00</span>
-                </li>
-            </ul>
-        </div>
-    </main>
-</body>
-</html>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+
+</main>
 
 
+<style>
+    .dashboard-container {
+        display: flex;
+        flex-wrap: wrap; 
+        gap: 20px; 
+        justify-content: flex-start;
+    }
+    
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        background-color: #fff;
+        flex-basis: 300px; 
+        flex-grow: 1; 
+    }
 
+    .card h3 {
+        margin-top: 0;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+    }
 
-<!-- Corpo da Home -->
+    .card p {
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #333;
+        margin: 10px 0 0 0;
+    }
+    
+    
+    .card.saldo p {
+        color: #007bff; 
+    }
+    
+    .card.vendido-hoje p {
+        color: #28a745; 
+    }
+    
+    .card.estoque-baixo p {
+        color: #dc3545; 
+        font-size: 2.2rem; 
+    }
 
-</div>
+    
+    .card.lancamentos ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+    .card.lancamentos li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        flex-wrap: wrap;
+    }
+    .card.lancamentos li:last-child {
+        border-bottom: none;
+    }
+    .card.lancamentos li span {
+        font-weight: bold;
+    }
+    .card.lancamentos li small {
+        color: #777;
+        width: 100%; 
+        text-align: right;
+        font-size: 0.8rem;
+    }
+    
+    /* Cores para entrada e saída */
+    .card.lancamentos li.entrada span {
+        color: #28a745; /* Verde */
+    }
+    .card.lancamentos li.saida span {
+        color: #dc3545; /* Vermelho */
+    }
+
+</style>
+
 <?php require __DIR__ . '/../layout/footer.php'; ?>
-
-
-

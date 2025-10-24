@@ -7,9 +7,9 @@ class ProdutoController
 {
     public function index()
     {
-        $nomeBusca = $_GET['busca'] ?? '';
-        $produtos = $nomeBusca ? Produto::searchByName($nomeBusca) : Produto::getAll();
+        $produtos = Produto::getAll();
         require __DIR__ . '/../Views/produtos/index.php';
+        $nomeBusca = $_GET['busca'] ?? '';
     }
 
     public function create()
@@ -59,4 +59,7 @@ class ProdutoController
         $produtos = Produto::getAll();
         require __DIR__ . '/../Views/produtos/relatorio.php';
     }
+
+
+    
 }

@@ -61,4 +61,7 @@ class ProdutoController
         $produtos = Produto::getAll();
         require __DIR__ . '/../Views/produto/relatorio.php';
     }
+
+
+    
 }

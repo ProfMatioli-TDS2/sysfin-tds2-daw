@@ -4,7 +4,6 @@
     <h1 class="h3">Lista de Fornecedores</h1>
     <div>
         <a class="btn btn-primary me-2" href="/fornecedores/criar">Novo Fornecedor</a>
-        <a class="btn btn-secondary" href="/fornecedores/relatorio" target="_blank">Gerar Relatório PDF</a>
     </div>
 </div>
 

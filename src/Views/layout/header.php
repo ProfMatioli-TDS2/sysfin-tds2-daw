@@ -28,7 +28,7 @@
                         <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/usuarios">Usuários</a></li>
                         <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/plano-contas">Plano de Contas</a></li>
                         <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/clientes">Clientes</a></li>
-                            <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/fornecedores">Fornecedores</a></li>
+                            <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/index.php?url=/fornecedores">Fornecedores</a></li>
                             <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/produtos">Produtos</a></li>
                         </ul>
                     </li>
@@ -48,7 +48,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/relatorio-cliente">Cliente</a></li>
-                            <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/relatorio-fornecedor">Fornecedor</a></li>
+                            <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/index.php?url=/fornecedores/relatorio" target="_blank">Fornecedor</a></li>
                             <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/relatorio-plano-conta">Plano de Contas</a></li>
                             <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/relatorio-compras">Compras</a></li>
                             <li><a class="dropdown-item" href="<?php echo BASE_URL;?>/relatorio-vendas">Vendas</a></li>

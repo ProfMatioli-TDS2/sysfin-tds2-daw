@@ -21,6 +21,11 @@
             <input type="number" name="estoque" id="estoque" class="form-control" value="<?= $produto->estoque ?>" readonly>
             <div class="form-text">O estoque não pode ser editado manualmente. Ele é atualizado pelas rotinas de compra e venda.</div>
         </div>
+
+        <div class="col-md-6 mb-3">
+        <label for="estoque_minimo" class="form-label">Estoque Mínimo:</label>
+        <input type="number" name="estoque_minimo" id="estoque_minimo" class="form-control" min="0" value="<?= $produto->estoque_minimo ?>" required>
+        </div>
     </div>
     <div class="mt-4">
         <button type="submit" class="btn btn-primary">Atualizar Produto</button>

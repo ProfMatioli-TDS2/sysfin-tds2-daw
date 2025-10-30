@@ -11,18 +11,19 @@ class Produto
     public $descricao;
     public $preco_venda;
     public $estoque;
+    public $estoque_minimo;
 
     public static function getAll()
     {
         $pdo = Database::getConnection();
-        $stmt = $pdo->query('SELECT id, nome, descricao, preco_venda, estoque_atual AS estoque FROM produtos ORDER BY nome');
+        $stmt = $pdo->query('SELECT id, nome, descricao, preco_venda, estoque_atual AS estoque, estoque_minimo FROM produtos ORDER BY nome');
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
 
     public static function getById($id)
     {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare('SELECT id, nome, descricao, preco_venda, estoque_atual AS estoque FROM produtos WHERE id = :id');
+        $stmt = $pdo->prepare('SELECT id, nome, descricao, preco_venda, estoque_atual AS estoque, estoque_minimo FROM produtos WHERE id = :id');
         $stmt->execute(['id' => $id]);
         return $stmt->fetchObject(self::class);
     }
@@ -33,23 +34,25 @@ class Produto
 
         if ($this->id) {
             $stmt = $pdo->prepare(
-                'UPDATE produtos SET nome = :nome, descricao = :descricao, preco_venda = :preco_venda WHERE id = :id'
+                'UPDATE produtos SET nome = :nome, descricao = :descricao, preco_venda = :preco_venda, estoque_minimo = :estoque_minimo WHERE id = :id'
             );
             $stmt->execute([
                 'id' => $this->id,
                 'nome' => $this->nome,
                 'descricao' => $this->descricao,
-                'preco_venda' => $this->preco_venda
+                'preco_venda' => $this->preco_venda,
+                'estoque_minimo' => $this->estoque_minimo
             ]);
         } else {
             $stmt = $pdo->prepare(
-                'INSERT INTO produtos (nome, descricao, preco_venda, estoque_atual) VALUES (:nome, :descricao, :preco_venda, :estoque)'
+                'INSERT INTO produtos (nome, descricao, preco_venda, estoque_atual, estoque_minimo) VALUES (:nome, :descricao, :preco_venda, :estoque, :estoque_minimo)'
             );
             $stmt->execute([
                 'nome' => $this->nome,
                 'descricao' => $this->descricao,
                 'preco_venda' => $this->preco_venda,
-                'estoque' => $this->estoque
+                'estoque' => $this->estoque,
+                'estoque_minimo' => $this->estoque_minimo
             ]);
             $this->id = $pdo->lastInsertId();
         }
@@ -67,7 +70,7 @@ class Produto
     public static function searchByName($nome)
     {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("SELECT id, nome, descricao, preco_venda, estoque_atual AS estoque FROM produtos WHERE nome LIKE :nome ORDER BY nome");
+        $stmt = $pdo->prepare("SELECT id, nome, descricao, preco_venda, estoque_atual AS estoque, estoque_minimo FROM produtos WHERE nome LIKE :nome ORDER BY nome");
         $stmt->execute(['nome' => '%' . $nome . '%']);
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }

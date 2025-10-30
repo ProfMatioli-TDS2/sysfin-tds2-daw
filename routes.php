@@ -2,7 +2,7 @@
 // Retorna uma função que define todas as rotas para o dispatcher
 return function (FastRoute\RouteCollector $r) {
     //home;
-    $r->addRoute('GET', '/', ['App\Controllers\HomeController', 'index']);
+    $r->addRoute('GET', '/', ['App\Controllers\MovimentoCaixaController', 'index']);
         
     //clientes;
     $r->addRoute('GET', '/clientes', [ 'App\Controllers\ClienteController', 'index']);
@@ -39,8 +39,7 @@ return function (FastRoute\RouteCollector $r) {
     
 
    
-    //dashboard (painel principal)
-    $r->addRoute('GET', '/index', ['App\Controllers\MovimentoCaixaController', 'index']);
+   
 
     
 

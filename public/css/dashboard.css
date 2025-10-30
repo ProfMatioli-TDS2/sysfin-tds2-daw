@@ -1,0 +1,84 @@
+/* Este é o arquivo CSS que seu index.php está tentando carregar.
+  Crie este arquivo no caminho: /public/css/dashboard.css
+*/
+
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 20px; 
+    justify-content: flex-start;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    background-color: #fff;
+    flex-basis: 300px; /* Largura mínima para cada card */
+    flex-grow: 1; /* Permite que os cards cresçam para preencher o espaço */
+}
+
+.card h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.card p {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #333;
+    margin: 10px 0 0 0;
+}
+
+/* --- Cores Específicas dos Cards --- */
+
+.card.saldo p {
+    color: #007bff; /* Azul */
+}
+
+.card.vendido-hoje p {
+    color: #28a745; /* Verde */
+}
+
+.card.estoque-baixo p {
+    color: #dc3545; /* Vermelho */
+    font-size: 2.2rem; /* Mantém o tamanho padrão */
+}
+
+/* --- Estilo da Lista de Lançamentos --- */
+
+.card.lancamentos ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+.card.lancamentos li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    flex-wrap: wrap; /* Permite quebrar linha em telas pequenas */
+}
+.card.lancamentos li:last-child {
+    border-bottom: none;
+}
+.card.lancamentos li span {
+    font-weight: bold;
+}
+.card.lancamentos li small {
+    color: #777;
+    width: 100%; /* Faz a data ir para a linha de baixo */
+    text-align: right;
+    font-size: 0.8rem;
+}
+
+/* Cores para entrada e saída */
+.card.lancamentos li.entrada span {
+    color: #28a745; /* Verde */
+}
+.card.lancamentos li.saida span {
+    color: #dc3545; /* Vermelho */
+}

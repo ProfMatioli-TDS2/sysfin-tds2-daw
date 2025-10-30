@@ -36,6 +36,13 @@ return function (FastRoute\RouteCollector $r) {
     $r->addRoute(['GET', 'POST'], '/produtos/editar/{id:\d+}', ['App\Controllers\ProdutoController', 'edit']);
     $r->addRoute('GET', '/produtos/excluir/{id:\d+}', ['App\Controllers\ProdutoController', 'delete']);
     $r->addRoute('GET', '/produtos/relatorio', ['App\Controllers\ProdutoController', 'report']);
+    
+
+   
+    //dashboard (painel principal)
+    $r->addRoute('GET', '/index', ['App\Controllers\MovimentoCaixaController', 'index']);
+
+    
 
     //vendas
     $r->addRoute('GET', '/vendas', ['App\Controllers\VendaController', 'index']);

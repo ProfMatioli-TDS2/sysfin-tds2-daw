@@ -21,6 +21,11 @@
             <label for="estoque" class="form-label">Estoque Inicial:</label>
             <input type="number" name="estoque" id="estoque" class="form-control" min="0" required>
         </div>
+        
+        <div class="col-md-4 mb-3">
+        <label for="estoque_minimo" class="form-label">Estoque Mínimo:</label>
+        <input type="number" name="estoque_minimo" id="estoque_minimo" class="form-control" min="0" value="0" required>
+    </div>
     </div>
     <div class="mt-4">
         <button type="submit" class="btn btn-primary">Salvar Produto</button>

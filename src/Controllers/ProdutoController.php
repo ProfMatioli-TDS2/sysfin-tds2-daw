@@ -9,7 +9,7 @@ class ProdutoController
     {
         $nomeBusca = $_GET['busca'] ?? '';
         $produtos = $nomeBusca ? Produto::searchByName($nomeBusca) : Produto::getAll();
-        require __DIR__ . '/../Views/produtos/index.php';
+        require __DIR__ . '/../Views/produto/index.php';
     }
 
     public function create()
@@ -20,11 +20,12 @@ class ProdutoController
             $produto->descricao = $_POST['descricao'];
             $produto->preco_venda = $_POST['preco_venda'];
             $produto->estoque = $_POST['estoque'];
+            $produto->estoque_minimo = $_POST['estoque_minimo'];
             $produto->save();
             header('Location: ' . BASE_URL . '/index.php?url=/produtos');
             exit;
         }
-        require __DIR__ . '/../Views/produtos/criar.php';
+        require __DIR__ . '/../Views/produto/criar.php';
     }
 
     public function edit($id)
@@ -40,11 +41,12 @@ class ProdutoController
             $produto->nome = $_POST['nome'];
             $produto->descricao = $_POST['descricao'];
             $produto->preco_venda = $_POST['preco_venda'];
+            $produto->estoque_minimo = $_POST['estoque_minimo'];
             $produto->save();
             header('Location: ' . BASE_URL . '/index.php?url=/produtos');
             exit;
         }
-        require __DIR__ . '/../Views/produtos/editar.php';
+        require __DIR__ . '/../Views/produto/editar.php';
     }
 
     public function delete($id)
@@ -57,6 +59,9 @@ class ProdutoController
     public function report()
     {
         $produtos = Produto::getAll();
-        require __DIR__ . '/../Views/produtos/relatorio.php';
+        require __DIR__ . '/../Views/produto/relatorio.php';
     }
+
+
+    
 }

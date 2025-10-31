@@ -13,10 +13,6 @@
     </div>
 </form>
 
-<div class="mb-3">
-    <a href="<?= BASE_URL ?>/index.php?url=/produtos/relatorio" target="_blank" class="btn btn-info">Gerar Relatório PDF</a>
-</div>
-
 <div class="table-responsive">
     <table class="table table-bordered table-hover">
         <thead>

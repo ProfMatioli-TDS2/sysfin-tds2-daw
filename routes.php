@@ -18,6 +18,7 @@ return function (FastRoute\RouteCollector $r) {
     $r->addRoute('POST', '/fornecedores/excluir/{id:\d+}', ['App\Controllers\FornecedorController', 'delete']);
     $r->addRoute('GET', '/fornecedores/relatorio', ['App\Controllers\FornecedorController', 'report']);
 
+
         //plano de contas;
     $r->addRoute('GET', '/plano-contas', [ 'App\Controllers\PlanoContaController', 'index']);
     $r->addRoute(['GET', 'POST'], '/plano-contas/criar', ['App\Controllers\PlanoContaController', 'create']);

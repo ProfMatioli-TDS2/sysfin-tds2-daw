@@ -8,22 +8,10 @@ class Compra
 {
     private $conn;
 
-    public function __construct()
+    public function __construct(PDO $db_connection)
     {
-        $host = '143.106.241.4'; 
-        $dbname = 'matioli';     
-        $user = 'bancomatioli'; 
-        $pass = 'senhabanco'; 
-        
-        try {
-            $this->conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            
-            die("Erro de Conexão com o Banco de Dados: " . $e->getMessage());
-        }
+        $this->conn = $db_connection;
     }
-
     public function getComprasByPeriod($dataInicial, $dataFinal)
     {
         
@@ -40,6 +28,7 @@ class Compra
 
         try {
             $stmt = $this->conn->prepare($sql);
+            
             $dataInicialDB = date('Y-m-d', strtotime($dataInicial));
             $dataFinalDB = date('Y-m-d', strtotime($dataFinal));
 
@@ -58,17 +47,16 @@ class Compra
     }
 
     /**
-     * @param array $dadosDaCompra 
+     * * @param array $dadosDaCompra 
      * @return bool 
      */
     public function salvar(array $dadosDaCompra)
     {
-
         $this->conn->beginTransaction();
 
         try {
             $sqlCompra = "INSERT INTO compras (id_fornecedor, data_compra, valor_total) 
-                          VALUES (:fornecedor_id, :data_compra, :valor_total)";
+                            VALUES (:fornecedor_id, :data_compra, :valor_total)";
             
             $stmtCompra = $this->conn->prepare($sqlCompra);
             
@@ -77,11 +65,13 @@ class Compra
                 ':data_compra'   => $dadosDaCompra['data_compra'],
                 ':valor_total'   => $dadosDaCompra['valor_total']
             ]);
+            
             $idCompra = $this->conn->lastInsertId();
             $sqlItens = "INSERT INTO itens_compra (id_compra, id_produto, quantidade, preco_unitario) 
-                         VALUES (:id_compra, :id_produto, :quantidade, :preco_unitario)";
+                            VALUES (:id_compra, :id_produto, :quantidade, :preco_unitario)";
             
             $stmtItens = $this->conn->prepare($sqlItens);
+            
             foreach ($dadosDaCompra['itens'] as $item) {
                 $stmtItens->execute([
                     ':id_compra'      => $idCompra,
@@ -90,6 +80,7 @@ class Compra
                     ':preco_unitario' => $item['preco'] 
                 ]);
             }
+
             $this->conn->commit();
             return true;
 

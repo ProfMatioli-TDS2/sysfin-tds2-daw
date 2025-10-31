@@ -8,20 +8,13 @@ class Usuario
 {
     private $conn;
 
-    // Conexão com o banco (igual aos seus outros models)
-    public function __construct()
+    /**
+     * O construtor agora recebe a conexão PDO do Database::getConnection()
+     * e a armazena na propriedade $conn.
+     */
+    public function __construct(PDO $db_connection)
     {
-        $host = '143.106.241.4'; 
-        $dbname = 'matioli';     
-        $user = 'bancomatioli'; 
-        $pass = 'senhabanco'; 
-        
-        try {
-            $this->conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("Erro de Conexão com o Banco de Dados: " . $e->getMessage());
-        }
+        $this->conn = $db_connection;
     }
 
     /**
@@ -79,6 +72,7 @@ class Usuario
 
         $this->conn->beginTransaction();
         try {
+            // 1. Inserir o usuário
             $sqlUser = "INSERT INTO usuarios (nome, email, senha_hash) VALUES (:nome, :email, :senha_hash)";
             $stmtUser = $this->conn->prepare($sqlUser);
             $stmtUser->execute([
@@ -89,7 +83,6 @@ class Usuario
 
             $idUsuario = $this->conn->lastInsertId();
 
-            // 2. Inserir os perfis na tabela pivot (usuarios_perfis)
             $sqlPerfis = "INSERT INTO usuarios_perfis (id_usuario, id_perfil) VALUES (:id_usuario, :id_perfil)";
             $stmtPerfis = $this->conn->prepare($sqlPerfis);
 
@@ -100,16 +93,13 @@ class Usuario
                 ]);
             }
 
-            // 3. Confirmar a transação
             $this->conn->commit();
             return true;
 
         } catch (PDOException $e) {
-            // 4. Desfazer tudo em caso de erro
             $this->conn->rollBack();
             error_log("Erro ao criar usuário: " . $e->getMessage());
             return false;
         }
     }
 }
-

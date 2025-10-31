@@ -1,6 +1,6 @@
 <?php
 namespace App\Controllers;
-
+use App\Core\Database;
 use App\Models\Usuario;
 use App\Models\Perfil;
 
@@ -31,25 +31,23 @@ class UsuarioController
                 exit;
             }
 
-            $usuarioModel = new Usuario();
+            $db = Database::getConnection(); 
             
-            // Tenta criar o usuário
+            $usuarioModel = new Usuario($db);
+
             $sucesso = $usuarioModel->create($nome, $email, $senha, $perfis_ids);
 
             if ($sucesso) {
-                // Redireciona para o login com mensagem de sucesso
                 header('Location: /login?success=registro_ok');
                 exit;
             } else {
-                // Pode ser email duplicado ou outro erro de DB
                 header('Location: /usuarios/criar?error=email_duplicado');
                 exit;
             }
         }
 
-        // Se for GET, busca os perfis e mostra o formulário
         $data = [
-            'perfis' => Perfil::getAll() // Busca perfis para os checkboxes
+            'perfis' => Perfil::getAll() 
         ];
         $this->renderView('usuario/create', $data);
     }

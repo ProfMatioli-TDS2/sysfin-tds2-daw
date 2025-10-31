@@ -22,14 +22,14 @@ class SessionManager
      */
     public static function login(string $email, string $senha): bool
     {
-        $usuarioModel = new Usuario();
+        $db = \App\Core\Database::getConnection(); 
+        $usuarioModel = new Usuario($db);
         $usuario = $usuarioModel->findByEmail($email);
 
         if ($usuario && password_verify($senha, $usuario->senha_hash)) {
             $perfis = $usuarioModel->findPerfis($usuario->id);
 
             session_regenerate_id(true);
-
 
             $_SESSION['user'] = [
                 'id'    => $usuario->id,
@@ -43,7 +43,6 @@ class SessionManager
 
         return false;
     }
-
 
     public static function logout()
     {
@@ -90,5 +89,35 @@ class SessionManager
             return false;
         }
         return in_array($perfilNome, $user['perfis']);
+    }
+
+    /**
+     * @param array $perfisRequeridos
+     */
+    public static function require_auth(array $perfisRequeridos = [])
+    {
+        self::start();
+
+        if (!self::isLoggedIn()) {
+            header('Location: /login?redirect_url=' . urlencode($_SERVER['REQUEST_URI']));
+            exit;
+        }
+
+        if (!empty($perfisRequeridos)) {
+            $acessoPermitido = false;
+            foreach ($perfisRequeridos as $perfil) {
+                if (self::hasRole($perfil)) {
+                    $acessoPermitido = true;
+                    break;
+                }
+            }
+
+            if (!$acessoPermitido) {
+                http_response_code(403);
+                echo "<h1>403 - Acesso Negado</h1>";
+                echo "<p>Você não tem permissão para acessar esta página.</p>";
+                exit;
+            }
+        }
     }
 }

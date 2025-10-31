@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Core\Database;
 use App\Models\Estoque;
 
-class EstoqueController
+class RelatorioEstoqueController
 {
     public function index()
     {

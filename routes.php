@@ -19,7 +19,7 @@ return function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/fornecedores/relatorio', ['App\Controllers\FornecedorController', 'report']);
 
 
-        //plano de contas;
+    //plano de contas;
     $r->addRoute('GET', '/plano-contas', [ 'App\Controllers\PlanoContaController', 'index']);
     $r->addRoute(['GET', 'POST'], '/plano-contas/criar', ['App\Controllers\PlanoContaController', 'create']);
     $r->addRoute(['GET', 'POST'], '/plano-contas/editar/{id:\d+}', ['App\Controllers\PlanoContaController', 'edit']);
@@ -57,4 +57,7 @@ return function (FastRoute\RouteCollector $r) {
     $r->addRoute(['GET', 'POST'], '/users/criar', ['App\Controllers\UserController', 'create']);
     $r->addRoute(['GET', 'POST'], '/users/editar/{id:\d+}', ['App\Controllers\UserController', 'edit']);
     $r->addRoute('GET', '/users/delete/{id:\d+}', ['App\Controllers\UserController', 'delete']);
+
+    //relatorio movimento de caixa
+    $r->addRoute('GET', '/relatorio-movimento-caixa', ['App\Controllers\RelatorioMovimentoCaixaController', 'index']);
 };

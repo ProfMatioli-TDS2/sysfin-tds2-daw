@@ -3,7 +3,7 @@ namespace App\Models;
 
 use App\Core\Database;
 
-class Relatorio
+class RelatorioMovimentoCaixa
 {
     public static function getSaldoAnterior($dataInicial)
     {

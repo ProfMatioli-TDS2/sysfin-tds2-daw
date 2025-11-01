@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/../vendor/autoload.php';
 // Define a URL base para construir links
 // CORREÇÃO FINAL
-define('BASE_URL', '/sysfin-tds2-daw');
+define('BASE_URL', '/sysfin-tds2/sysfin-tds2-daw');
 // Cria o dispatcher do FastRoute, alimentando-o com nossas definições de rotas
 $dispatcher = FastRoute\simpleDispatcher(
     require __DIR__ . '/../routes.php'

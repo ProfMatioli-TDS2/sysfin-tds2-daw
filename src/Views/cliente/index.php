@@ -1,29 +1,54 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Gestão de Clientes</h1>
-    <a class="btn btn-primary" href="<?php echo BASE_URL; ?>/clientes/novo">Adicionar Cliente</a>
-</div>
 
-<div class="table-responsive">
-    <table class="table table-bordered table-hover w-100 mx-auto">
+<div class="container">
+    <h1 class="my-4">Lista de Clientes</h1>
 
+    <form method="GET" class="mb-3">
+        <div class="input-group">
+            <input type="hidden" name="url" value="/clientes">
+            <input type="text" class="form-control" 
+                   name="busca" 
+                   placeholder="Buscar cliente por nome..."
+                   value="<?php echo htmlspecialchars($nome ?? '', ENT_QUOTES); ?>">
+            <button class="btn btn-primary" type="submit">Buscar</button>
+        </div>
+    </form>
+
+    <a href="<?php echo BASE_URL; ?>/index.php?url=/clientes/criar" class="btn btn-success mb-3">
+        Novo Cliente
+    </a>
+    
+    <table class="table table-striped table-bordered">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Nome</th>
                 <th>CPF/CNPJ</th>
-                <th>Ações</th>
+                <th>E-mail</th>
+                <th>Telefone</th>
+                <th style="width: 180px;">Ações</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($clientes as $cliente): ?>
                 <tr>
-                    <td><?= $cliente->id ?></td>
-                    <td><?= htmlspecialchars($cliente->nome) ?></td>
-                    <td><?= htmlspecialchars($cliente->cpf_cnpj) ?></td>
+                    <td><?php echo htmlspecialchars($cliente->nome); ?></td>
+                    <td><?php echo htmlspecialchars($cliente->cpf_cnpj); ?></td>
+                    <td><?php echo htmlspecialchars($cliente->email); ?></td>
+                    <td><?php echo htmlspecialchars($cliente->telefone); ?></td>
                     <td>
-                        <a class="btn btn-warning btn-sm" href="clientes/editar/<?= $cliente->id ?>">Editar</a>
-                        <a class="btn btn-danger btn-sm" href="clientes/excluir/<?= $cliente->id ?>" onclick="return confirm('Tem certeza?')">Excluir</a>
+                        <a href="<?php echo BASE_URL; ?>/index.php?url=/clientes/editar/<?php echo $cliente->id; ?>" 
+                           class="btn btn-warning btn-sm">
+                           Editar
+                        </a>
+
+                        <form method="POST" 
+                              action="<?php echo BASE_URL; ?>/index.php?url=/clientes/excluir/<?php echo $cliente->id; ?>" 
+                              style="display: inline;"
+                              onsubmit="return confirm('Tem certeza que deseja excluir?');">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Excluir
+                            </button>
+                        </form>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -31,4 +56,4 @@
     </table>
 </div>
 
-    <?php require __DIR__ . '/../layout/footer.php'; ?>
+<?php require __DIR__ . '/../layout/footer.php'; ?>

@@ -3,15 +3,20 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3">Lista de Fornecedores</h1>
     <div>
-        <a class="btn btn-primary me-2" href="/fornecedores/criar">Novo Fornecedor</a>
+        <!-- CORRIGIDO -->
+        <a class="btn btn-primary me-2" href="<?php echo BASE_URL; ?>/index.php?url=/fornecedores/criar">Novo Fornecedor</a>
     </div>
 </div>
 
-<form method="GET" action="/fornecedores" class="mb-4">
+<!-- CORRIGIDO -->
+<form method="GET" action="<?php echo BASE_URL; ?>/index.php?url=/fornecedores" class="mb-4">
     <div class="input-group w-50">
-        <input type="text" name="busca" class="form-control" placeholder="Buscar por nome">
+        <!-- Adicionado input hidden para a URL -->
+        <input type="hidden" name="url" value="/fornecedores">
+        <input type="text" name="busca" class="form-control" placeholder="Buscar por nome" value="<?php echo htmlspecialchars($_GET['busca'] ?? ''); ?>">
         <button type="submit" class="btn btn-outline-primary">Buscar</button>
-        <a href="/fornecedores" class="btn btn-outline-secondary">Atualizar</a>
+        <!-- CORRIGIDO -->
+        <a href="<?php echo BASE_URL; ?>/index.php?url=/fornecedores" class="btn btn-outline-secondary">Atualizar</a>
     </div>
 </form>
 
@@ -34,11 +39,13 @@
                     <td><?= htmlspecialchars($f->email) ?></td>
                     <td><?= htmlspecialchars($f->telefone) ?></td>
                     <td>
-                        <a class="btn btn-warning btn-sm" href="/fornecedores/editar/<?= $f->id ?>">Editar</a>
-                        <form method="POST" action="/fornecedores/excluir/<?= $f->id ?>" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
+                        <!-- CORRIGIDO -->
+                        <a class="btn btn-warning btn-sm" href="<?php echo BASE_URL; ?>/index.php?url=/fornecedores/editar/<?= $f->id ?>">Editar</a>
+                        
+                        <!-- CORRIGIDO -->
+                        <form method="POST" action="<?php echo BASE_URL; ?>/index.php?url=/fornecedores/excluir/<?= $f->id ?>" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir?')">
                             <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
                         </form>
-
                     </td>
                 </tr>
             <?php endforeach; ?>

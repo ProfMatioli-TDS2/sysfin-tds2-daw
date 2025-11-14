@@ -14,7 +14,7 @@ class PlanoConta
      * Retorna todas as contas, ordenadas por tipo e descrição.
      * (Requisito da Tarefa)
      */
-    public static function getAll()
+    public static function getAll(): mixed
     {
         $pdo = Database::getConnection();
         // Ordena por Tipo (Despesas 'D' vem antes de Receitas 'R') e Descrição

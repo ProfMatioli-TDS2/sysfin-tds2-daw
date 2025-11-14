@@ -14,6 +14,11 @@
         Nova Conta
     </a>
 
+    <!-- BOTÃO DE GERAR PDF (aponta para a rota /relatorio) -->
+    <a href="<?php echo BASE_URL; ?>/index.php?url=/plano-contas/relatorio" class="btn btn-primary mb-3" target="_blank">
+        Gerar PDF
+    </a>
+
     <table class="table table-striped table-bordered">
         <thead class="table-light">
             <tr>
@@ -28,7 +33,6 @@
                     <td><?php echo htmlspecialchars($plano->descricao); ?></td>
                     <td>
                         <?php 
-                            // Converte 'R'/'D' para texto
                             if ($plano->tipo === 'R') {
                                 echo '<span class="text-success fw-bold">Receita</span>';
                             } else {
@@ -42,7 +46,7 @@
                            Editar
                         </a>
 
-                        <?php if ($plano->id > 5): // Só mostra o botão de excluir para contas não-padrão ?>
+                        <?php if ($plano->id > 5): ?>
                             <form method="POST" 
                                   action="<?php echo BASE_URL; ?>/index.php?url=/plano-contas/excluir/<?php echo $plano->id; ?>" 
                                   style="display: inline;"

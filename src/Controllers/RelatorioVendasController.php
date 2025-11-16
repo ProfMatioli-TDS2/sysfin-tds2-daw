@@ -1,28 +1,33 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\RelatorioVendas;
+use App\Models\Venda;
+use Dompdf\Dompdf;
 
 class RelatorioVendasController
 {
-    public function form()
+    public function index()
     {
-        // Tela para o usuário escolher o período
-        require __DIR__ . '/../Views/relatorio_vendas/form.php';
-    }
+        // Se houver controle de autenticação, descomente e ajuste conforme seu sistema:
+        // require_auth(['Tesoureiro', 'Administrador']);
 
-    public function gerar()
-    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Recebe as datas informadas no formulário
-            $dataInicio = $_POST['data_inicio'];
-            $dataFim = $_POST['data_fim'];
-            
-            // Busca os dados das vendas no período
-            $vendas = RelatorioVendas::getByPeriodo($dataInicio, $dataFim);
-            
-            // Exibe o relatório na tela
-            require __DIR__ . '/../Views/relatorio_vendas/report.php';
+            $dataInicial = $_POST['data_inicial'];
+            $dataFinal = $_POST['data_final'];
+
+            $vendas = Venda::getByPeriodo($dataInicial, $dataFinal);
+
+            ob_start();
+            require __DIR__ . '/../Views/relatorios/vendas_periodo.php';
+            $html = ob_get_clean();
+
+            $pdf = new Dompdf();
+            $pdf->loadHtml($html);
+            $pdf->setPaper('A4', 'portrait');
+            $pdf->render();
+            $pdf->stream("relatorio_vendas.pdf", ["Attachment" => false]);
+        } else {
+            require __DIR__ . '/../Views/relatorios/filtro_vendas.php';
         }
     }
 }

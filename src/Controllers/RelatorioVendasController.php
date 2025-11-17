@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 
+// 1. IMPORTA O SESSION MANAGER
+use App\Core\SessionManager;
 use App\Models\Venda;
 use Dompdf\Dompdf;
 
@@ -8,8 +10,8 @@ class RelatorioVendasController
 {
     public function index()
     {
-        // Se houver controle de autenticação, descomente e ajuste conforme seu sistema:
-        // require_auth(['Tesoureiro', 'Administrador']);
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $dataInicial = $_POST['data_inicial'];

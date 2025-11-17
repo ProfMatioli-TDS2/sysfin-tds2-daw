@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 
+// 1. IMPORTA O SESSION MANAGER
+use App\Core\SessionManager;
 use App\Models\Venda;
 use App\Models\Cliente;
 use App\Models\Produto;
@@ -13,6 +15,9 @@ class VendaController
      */
     public function index()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+        
         $vendas = Venda::getAll();
         require __DIR__ . '/../Views/vendas/index.php';
     }
@@ -22,6 +27,9 @@ class VendaController
      */
     public function create()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->store();
             return;
@@ -33,6 +41,7 @@ class VendaController
 
     /**
      * Lógica de salvar a venda (store)
+     * (Este método é privado, é automaticamente protegido pelo 'create')
      */
     private function store()
     {
@@ -66,6 +75,9 @@ class VendaController
      */
     public function details($id)
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+        
         $venda = Venda::getById($id);
         if (!$venda) {
             http_response_code(404);
@@ -80,6 +92,9 @@ class VendaController
      */
     public function report()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+        
         // Dados padrão para a view
         $data = [
             'vendas' => [],

@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 
+// 1. IMPORTA O SESSION MANAGER
+use App\Core\SessionManager;
 use App\Models\PlanoConta;
 use App\Models\MovimentoCaixa;
 use Exception;
@@ -12,6 +14,9 @@ class LancamentoCaixaController
      */
     public function create()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+        
         $data = [
             'planosConta' => PlanoConta::getAll(),
             'error' => null,

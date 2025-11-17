@@ -20,9 +20,6 @@ class Usuario
     public $id_perfil; 
     public $usuario_id; 
 
-    /**
-     * Busca um usuário ATIVO pelo seu 'login'.
-     */
     public static function findByLogin(string $login)
     {
         $pdo = Database::getConnection();
@@ -31,30 +28,21 @@ class Usuario
         return $stmt->fetchObject(self::class);
     }
 
-    /**
-     * Busca os nomes dos perfis de um usuário.
-     */
     public static function getPerfis(int $usuarioId): array
     {
         $pdo = Database::getConnection();
-        
         $sql = "SELECT p.nome 
                 FROM perfis p
                 INNER JOIN usuario_perfis up ON p.id = up.id_perfil
                 WHERE up.id_usuario = :id";
-                
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['id' => $usuarioId]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
-    /**
-     * Busca TODOS os usuários e seus perfis (para a listagem)
-     */
     public static function getAll()
     {
         $pdo = Database::getConnection();
-        
         $sql = "SELECT u.id, u.nome, u.login, u.ativo, 
                        GROUP_CONCAT(p.nome SEPARATOR ', ') as perfis_nomes
                 FROM usuarios u
@@ -62,14 +50,10 @@ class Usuario
                 LEFT JOIN perfis p ON up.id_perfil = p.id
                 GROUP BY u.id
                 ORDER BY u.nome";
-        
         $stmt = $pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
 
-    /**
-     * Busca um usuário pelo ID (para o formulário de edição)
-     */
     public static function getById(int $id)
     {
         $pdo = Database::getConnection();
@@ -78,22 +62,15 @@ class Usuario
         return $stmt->fetchObject(self::class);
     }
 
-    /**
-     * Busca apenas os IDs dos perfis de um usuário (para o form.php)
-     */
     public function getProfileIds(): array
     {
         if (!$this->id) return [];
         $pdo = Database::getConnection();
-        
         $stmt = $pdo->prepare('SELECT id_perfil FROM usuario_perfis WHERE id_usuario = :id');
         $stmt->execute(['id' => $this->id]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN, 0); 
     }
 
-    /**
-     * Exclui um usuário (e suas associações de perfil)
-     */
     public static function delete(int $id)
     {
         $pdo = Database::getConnection();
@@ -156,11 +133,6 @@ class Usuario
                 }
                 
                 $sql = "INSERT INTO usuarios (nome, login, ativo, senha_hash) VALUES (:nome, :login, :ativo, :hash)";
-                
-                // ==========================================================
-                // ERRO CORRIGIDO (Linha 152)
-                // Era $this.nome, $this.login, etc.
-                // ==========================================================
                 $params = [
                     'nome' => $this->nome,
                     'login' => $this->login,
@@ -177,13 +149,25 @@ class Usuario
             $stmtDel = $pdo->prepare('DELETE FROM usuario_perfis WHERE id_usuario = :id');
             $stmtDel->execute(['id' => $this->id]);
             
-            if (empty($this->perfis)) {
+            
+            // --- INÍCIO DA CORREÇÃO ---
+            // 1. Limpa o array de perfis (que já foi limpo pelo Controller,
+            // mas fazemos de novo por segurança).
+            $perfisLimpos = array_filter($this->perfis ?? []);
+
+            // 2. Verifica se o array "limpo" está vazio
+            if (empty($perfisLimpos)) {
                 // Resolve o erro "1364 Field 'id_perfil' doesn't have a default value"
                 throw new Exception("Você deve selecionar pelo menos um perfil de acesso.");
             }
+            // --- FIM DA CORREÇÃO ---
+
             
             $stmtIns = $pdo->prepare('INSERT INTO usuario_perfis (id_usuario, id_perfil) VALUES (:uid, :pid)');
-            foreach ($this->perfis as $perfil_id) {
+            
+            // 3. Itera sobre o array "limpo"
+            foreach ($perfisLimpos as $perfil_id) {
+                // Esta linha agora só recebe IDs válidos
                 $stmtIns->execute(['uid' => $this->id, 'pid' => $perfil_id]);
             }
             

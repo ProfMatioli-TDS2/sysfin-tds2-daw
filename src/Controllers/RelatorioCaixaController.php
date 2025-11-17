@@ -1,7 +1,10 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\MovimentoCaixa;
+// 1. IMPORTA O SESSION MANAGER
+use App\Core\SessionManager;
+use App\Core\Database;
+use App\Models\MovimentoCaixaModel;
 
 class RelatorioCaixaController
 {
@@ -10,6 +13,9 @@ class RelatorioCaixaController
      */
     public function index()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+        
         // Dados padrão para a view (quando a página é carregada)
         $data = [
             'dataInicial' => '',

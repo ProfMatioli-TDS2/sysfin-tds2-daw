@@ -14,9 +14,11 @@
         </div>
     </form>
 
-    <a href="<?php echo BASE_URL; ?>/index.php?url=/clientes/criar" class="btn btn-success mb-3">
-        Novo Cliente
-    </a>
+    <?php if (\App\Core\SessionManager::hasRole('Administrador')): ?>
+        <a href="<?php echo BASE_URL; ?>/index.php?url=/clientes/criar" class="btn btn-success mb-3">
+            Novo Cliente
+        </a>
+    <?php endif; ?>
     
     <table class="table table-striped table-bordered">
         <thead>
@@ -36,19 +38,23 @@
                     <td><?php echo htmlspecialchars($cliente->email); ?></td>
                     <td><?php echo htmlspecialchars($cliente->telefone); ?></td>
                     <td>
-                        <a href="<?php echo BASE_URL; ?>/index.php?url=/clientes/editar/<?php echo $cliente->id; ?>" 
-                           class="btn btn-warning btn-sm">
-                           Editar
-                        </a>
+                        <?php if (\App\Core\SessionManager::hasRole('Administrador')): ?>
+                            <a href="<?php echo BASE_URL; ?>/index.php?url=/clientes/editar/<?php echo $cliente->id; ?>" 
+                               class="btn btn-warning btn-sm">
+                                Editar
+                            </a>
 
-                        <form method="POST" 
-                              action="<?php echo BASE_URL; ?>/index.php?url=/clientes/excluir/<?php echo $cliente->id; ?>" 
-                              style="display: inline;"
-                              onsubmit="return confirm('Tem certeza que deseja excluir?');">
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                Excluir
-                            </button>
-                        </form>
+                            <form method="POST" 
+                                  action="<?php echo BASE_URL; ?>/index.php?url=/clientes/excluir/<?php echo $cliente->id; ?>" 
+                                  style="display: inline;"
+                                  onsubmit="return confirm('Tem certeza que deseja excluir?');">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Excluir
+                                </button>
+                            </form>
+                        <?php else: ?>
+                            <span class="text-muted">Acesso restrito</span>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>

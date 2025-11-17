@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 
+// 1. IMPORTA O SESSION MANAGER
+use App\Core\SessionManager;
 use App\Models\PlanoConta;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -12,6 +14,9 @@ class PlanoContaController
      */
     public function index()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+        
         $planosConta = PlanoConta::getAll();
         
         // (Esta variável $error é usada se a exclusão falhar)
@@ -25,6 +30,9 @@ class PlanoContaController
      */
     public function create()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $planoConta = new PlanoConta();
             $planoConta->descricao = $_POST['descricao'];
@@ -44,6 +52,9 @@ class PlanoContaController
      */
     public function edit($id)
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+        
         $planoConta = PlanoConta::getById($id);
 
         if (!$planoConta) {
@@ -75,6 +86,9 @@ class PlanoContaController
      */
     public function delete($id)
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+        
         // VERIFICAÇÃO 1: É uma conta padrão (ID 1-5)?
         if (PlanoConta::isProtegido($id)) {
             $errorMsg = "Erro: Esta é uma conta padrão e não pode ser excluída.";
@@ -100,6 +114,9 @@ class PlanoContaController
      */
     public function report()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+        
         $planosConta = PlanoConta::getAll();
 
         ob_start();

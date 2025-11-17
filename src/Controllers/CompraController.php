@@ -1,54 +1,49 @@
 <?php 
 namespace App\Controllers;
 
+// 1. Incluir as classes que vamos usar
+use App\Core\Database;
+use App\Core\SessionManager; // (Já estava no seu código, agora será usado)
 use App\Models\Compra;
-use App\Models\Fornecedor; // Necessário para o dropdown
-use App\Models\Produto;    // Necessário para o dropdown
-use Dompdf\Dompdf;
-use Dompdf\Options;
-use Exception; // Necessário para o try/catch
 
 class CompraController
 {
     /**
-     * Exibe a tela de registro de compra (GET)
-     * ou processa a compra (POST).
+     * @param string $viewPath
+     * @param array $data 
      */
-    public function registrar() 
+    private function renderView(string $viewPath, array $data = [])
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            try {
-                // Dados vêm do formulário (incluindo os inputs escondidos do JS)
-                $idFornecedor = $_POST['id_fornecedor'];
-                $itens = $_POST['itens'] ?? []; 
-                $valorTotal = $_POST['valor_total'];
-                
-                // (Esta é a lógica da Tarefa #7, que seu Model já faz)
-                Compra::registrarCompra($idFornecedor, $itens, $valorTotal);
-                
-                // ==========================================================
-                // CORREÇÃO AQUI
-                // Em vez de redirecionar para o relatório de compras,
-                // vamos redirecionar para o Dashboard (página inicial).
-                // ==========================================================
-                header('Location: ' . BASE_URL . '/index.php?url=/');
-                exit;
+        
+        extract($data); 
 
-            } catch (Exception $e) {
-                // Se o Model (Compra::registrarCompra) der um erro
-                $data['error'] = $e->getMessage();
-            }
-        } 
         
-        // (GET) ou (POST com erro): Exibe a view de registro com os dados
+        $fullPath = __DIR__ . "/../Views/{$viewPath}.php";
+
+        
+        if (file_exists($fullPath)) {
+            
+            include $fullPath;
+        } else {
+            
+            echo "Erro: View não encontrada em " . $fullPath;
+        }
+    }
+
+    /**
+     * Tela de Registro de Compra
+     */
+    public function registrar()
+    {
+        // Proteção de acesso (Permitido para Admin, Tesoureiro e Vendedor)
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+
         $data = [
-            'fornecedores' => Fornecedor::getAll(),
-            'produtos' => Produto::getAll(),
-            'error' => $data['error'] ?? null
+            'fornecedores' => \App\Models\Fornecedor::getAll(),
+            'produtos' => \App\Models\Produto::getAll(),
         ];
-        
-        extract($data);
-        require __DIR__ . '/../Views/compras/registrar.php';
+
+        $this->renderView('compras/registrar', $data);
     }
 
     /**
@@ -56,6 +51,9 @@ class CompraController
      */
     public function report()
     {
+        // Proteção de acesso (Permitido para Admin e Tesoureiro)
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+
         $data = [
             'compras' => [], 
             'totalCompras' => 0, 
@@ -69,7 +67,13 @@ class CompraController
             $dataFinal = $_POST['data_final'] ?? '';
 
             if ($dataInicial && $dataFinal) {
-                $compras = Compra::getComprasByPeriod($dataInicial, $dataFinal);
+                
+                $compraModel = new Compra();
+                
+                
+                $compras = $compraModel->getComprasByPeriod($dataInicial, $dataFinal);
+
+                
                 $totalCompras = count($compras);
                 $valorTotal = array_sum(array_column($compras, 'valor_total'));
                 
@@ -83,7 +87,7 @@ class CompraController
             }
         }
 
-        extract($data);
-        require __DIR__ . '/../Views/compras/report.php';
+        
+        $this->renderView('compras/report', $data);
     }
 }

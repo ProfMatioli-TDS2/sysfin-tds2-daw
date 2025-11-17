@@ -3,16 +3,17 @@
 <div class="container">
     <h1 class="my-4">Plano de Contas</h1>
 
-    <!-- Exibe mensagem de erro (se a exclusão falhar) -->
     <?php if (isset($error)): ?>
         <div class="alert alert-danger" role="alert">
             <?php echo htmlspecialchars($error); ?>
         </div>
     <?php endif; ?>
 
-    <a href="<?php echo BASE_URL; ?>/index.php?url=/plano-contas/criar" class="btn btn-success mb-3">
-        Nova Conta
-    </a>
+    <?php if (\App\Core\SessionManager::hasRole('Administrador')): ?>
+        <a href="<?php echo BASE_URL; ?>/index.php?url=/plano-contas/criar" class="btn btn-success mb-3">
+            Nova Conta
+        </a>
+    <?php endif; ?>
 
     <table class="table table-striped table-bordered">
         <thead class="table-light">
@@ -37,20 +38,24 @@
                         ?>
                     </td>
                     <td>
-                        <a href="<?php echo BASE_URL; ?>/index.php?url=/plano-contas/editar/<?php echo $plano->id; ?>" 
-                           class="btn btn-warning btn-sm">
-                           Editar
-                        </a>
+                        <?php if (\App\Core\SessionManager::hasRole('Administrador')): ?>
+                            <a href="<?php echo BASE_URL; ?>/index.php?url=/plano-contas/editar/<?php echo $plano->id; ?>" 
+                               class="btn btn-warning btn-sm">
+                                Editar
+                            </a>
 
-                        <?php if ($plano->id > 5): // Só mostra o botão de excluir para contas não-padrão ?>
-                            <form method="POST" 
-                                  action="<?php echo BASE_URL; ?>/index.php?url=/plano-contas/excluir/<?php echo $plano->id; ?>" 
-                                  style="display: inline;"
-                                  onsubmit="return confirm('Tem certeza que deseja excluir? Esta ação não pode ser desfeita.');">
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    Excluir
-                                </button>
-                            </form>
+                            <?php if ($plano->id > 5): // Só mostra o botão de excluir para contas não-padrão ?>
+                                <form method="POST" 
+                                      action="<?php echo BASE_URL; ?>/index.php?url=/plano-contas/excluir/<?php echo $plano->id; ?>" 
+                                      style="display: inline;"
+                                      onsubmit="return confirm('Tem certeza que deseja excluir? Esta ação não pode ser desfeita.');">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Excluir
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <span class="text-muted">Acesso restrito</span>
                         <?php endif; ?>
                     </td>
                 </tr>

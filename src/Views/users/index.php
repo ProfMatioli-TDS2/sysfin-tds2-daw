@@ -34,10 +34,20 @@
                         <a href="<?php echo BASE_URL; ?>/index.php?url=/users/editar/<?php echo $usuario->id; ?>" 
                            class="btn btn-warning btn-sm">Editar</a>
                         
-                        <?php if ($usuario->id > 1): // Protege o usuário ID 1 ?>
-                        <a href="<?php echo BASE_URL; ?>/index.php?url=/users/delete/<?php echo $usuario->id; ?>" 
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</a>
+                        <?php 
+                        // Proteção visual:
+                        // 1. O usuário ID 1 não pode ser excluído.
+                        // 2. O usuário logado não pode excluir a si mesmo.
+                        if ($usuario->id > 1 && $usuario->id != \App\Core\SessionManager::getUserId()): 
+                        ?>
+                            <form method="POST" 
+                                  action="<?php echo BASE_URL; ?>/index.php?url=/users/delete/<?php echo $usuario->id; ?>" 
+                                  style="display: inline;"
+                                  onsubmit="return confirm('Tem certeza que deseja excluir?');">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Excluir
+                                </button>
+                            </form>
                         <?php endif; ?>
                     </td>
                 </tr>

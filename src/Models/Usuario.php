@@ -10,69 +10,50 @@ class Usuario
     public $id;
     public $nome;
     public $login;
-    public $senha; // Apenas para o formulário
-    public $senha_hash; // O que vai para o banco
+    public $senha; 
+    public $senha_hash; 
     public $ativo;
-    public $perfis = []; // Array de IDs de perfil (do formulário)
+    public $perfis = []; 
 
-    // (Para corrigir avisos 'Deprecated')
     public $perfis_nomes; 
     public $id_perfil; 
     public $usuario_id; 
 
-    public static function findByLogin(string $login)
-    {
+    // ... (Métodos de busca findByLogin, getPerfis, getAll, getById, getProfileIds mantidos iguais) ...
+    public static function findByLogin(string $login) {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare('SELECT * FROM usuarios WHERE login = :login AND ativo = 1');
         $stmt->execute(['login' => $login]);
         return $stmt->fetchObject(self::class);
     }
-
-    public static function getPerfis(int $usuarioId): array
-    {
+    public static function getPerfis(int $usuarioId): array {
         $pdo = Database::getConnection();
-        $sql = "SELECT p.nome 
-                FROM perfis p
-                INNER JOIN usuario_perfis up ON p.id = up.id_perfil
-                WHERE up.id_usuario = :id";
+        $sql = "SELECT p.nome FROM perfis p INNER JOIN usuario_perfis up ON p.id = up.id_perfil WHERE up.id_usuario = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['id' => $usuarioId]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
     }
-
-    public static function getAll()
-    {
+    public static function getAll() {
         $pdo = Database::getConnection();
-        $sql = "SELECT u.id, u.nome, u.login, u.ativo, 
-                       GROUP_CONCAT(p.nome SEPARATOR ', ') as perfis_nomes
-                FROM usuarios u
-                LEFT JOIN usuario_perfis up ON u.id = up.id_usuario
-                LEFT JOIN perfis p ON up.id_perfil = p.id
-                GROUP BY u.id
-                ORDER BY u.nome";
+        // Nota: Ajustado para pegar o id_perfil direto da tabela usuarios se necessário, mas mantendo a lógica original
+        $sql = "SELECT u.id, u.nome, u.login, u.ativo, GROUP_CONCAT(p.nome SEPARATOR ', ') as perfis_nomes FROM usuarios u LEFT JOIN usuario_perfis up ON u.id = up.id_usuario LEFT JOIN perfis p ON up.id_perfil = p.id GROUP BY u.id ORDER BY u.nome";
         $stmt = $pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
-
-    public static function getById(int $id)
-    {
+    public static function getById(int $id) {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare('SELECT * FROM usuarios WHERE id = :id');
         $stmt->execute(['id' => $id]);
         return $stmt->fetchObject(self::class);
     }
-
-    public function getProfileIds(): array
-    {
+    public function getProfileIds(): array {
         if (!$this->id) return [];
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare('SELECT id_perfil FROM usuario_perfis WHERE id_usuario = :id');
         $stmt->execute(['id' => $this->id]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN, 0); 
     }
-
-    public static function delete(int $id)
-    {
+    public static function delete(int $id) {
         $pdo = Database::getConnection();
         try {
             $pdo->beginTransaction();
@@ -86,89 +67,72 @@ class Usuario
         }
     }
 
-
     /**
-     * Salva (Cria ou Atualiza) um usuário e seus perfis
+     * Salva (Cria ou Atualiza)
      */
     public function save(): bool
     {
         $pdo = Database::getConnection();
         
         try {
+            // 1. PREPARAÇÃO DOS PERFIS (Antes de tudo!)
+            // Limpa o array de perfis para garantir que temos dados válidos
+            $perfisLimpos = array_filter($this->perfis ?? []);
+
+            if (empty($perfisLimpos)) {
+                throw new Exception("Você deve selecionar pelo menos um perfil de acesso.");
+            }
+
+            // Pega o primeiro perfil para salvar na coluna principal 'id_perfil' da tabela 'usuarios'
+            // Isso resolve o erro 1364 na tabela de usuários.
+            $idPerfilPrincipal = (int) reset($perfisLimpos);
+
             $pdo->beginTransaction();
 
-            // --- 1. Salva o Usuário ---
+            // --- 2. Salva o Usuário (Tabela 'usuarios') ---
             
             if (!empty($this->senha)) {
                 $this->senha_hash = password_hash($this->senha, PASSWORD_DEFAULT);
             }
 
             if ($this->id) {
-                // ATUALIZAR
+                // UPDATE
+                // Agora incluímos o id_perfil na atualização
                 if ($this->senha_hash) {
-                    $sql = "UPDATE usuarios SET nome = :nome, login = :login, ativo = :ativo, senha_hash = :hash WHERE id = :id";
-                    $params = [
-                        'nome' => $this->nome,
-                        'login' => $this->login,
-                        'ativo' => $this->ativo,
-                        'hash' => $this->senha_hash,
-                        'id' => $this->id
-                    ];
+                    $sql = "UPDATE usuarios SET nome = ?, login = ?, ativo = ?, senha_hash = ?, id_perfil = ? WHERE id = ?";
+                    $params = [$this->nome, $this->login, $this->ativo, $this->senha_hash, $idPerfilPrincipal, $this->id];
                 } else {
-                    $sql = "UPDATE usuarios SET nome = :nome, login = :login, ativo = :ativo WHERE id = :id";
-                    $params = [
-                        'nome' => $this->nome,
-                        'login' => $this->login,
-                        'ativo' => $this->ativo,
-                        'id' => $this->id
-                    ];
+                    $sql = "UPDATE usuarios SET nome = ?, login = ?, ativo = ?, id_perfil = ? WHERE id = ?";
+                    $params = [$this->nome, $this->login, $this->ativo, $idPerfilPrincipal, $this->id];
                 }
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute($params);
                 
             } else {
-                // CRIAR
+                // INSERT
+                // Agora incluímos o id_perfil na criação (Resolvendo o erro 1364)
                 if (empty($this->senha_hash)) {
                     throw new Exception("A senha é obrigatória ao criar um usuário.");
                 }
                 
-                $sql = "INSERT INTO usuarios (nome, login, ativo, senha_hash) VALUES (:nome, :login, :ativo, :hash)";
-                $params = [
-                    'nome' => $this->nome,
-                    'login' => $this->login,
-                    'ativo' => $this->ativo,
-                    'hash' => $this->senha_hash
-                ];
+                $sql = "INSERT INTO usuarios (nome, login, ativo, senha_hash, id_perfil) VALUES (?, ?, ?, ?, ?)";
+                $params = [$this->nome, $this->login, $this->ativo, $this->senha_hash, $idPerfilPrincipal];
+                
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute($params);
                 $this->id = $pdo->lastInsertId();
             }
             
-            // --- 2. Salva os Perfis ---
-
-            $stmtDel = $pdo->prepare('DELETE FROM usuario_perfis WHERE id_usuario = :id');
-            $stmtDel->execute(['id' => $this->id]);
+            // --- 3. Salva os Perfis (Tabela N:N 'usuario_perfis') ---
+            // Mantemos isso pois seu sistema parece usar checkbox (múltiplos perfis)
             
+            $stmtDel = $pdo->prepare('DELETE FROM usuario_perfis WHERE id_usuario = ?');
+            $stmtDel->execute([$this->id]);
             
-            // --- INÍCIO DA CORREÇÃO ---
-            // 1. Limpa o array de perfis (que já foi limpo pelo Controller,
-            // mas fazemos de novo por segurança).
-            $perfisLimpos = array_filter($this->perfis ?? []);
-
-            // 2. Verifica se o array "limpo" está vazio
-            if (empty($perfisLimpos)) {
-                // Resolve o erro "1364 Field 'id_perfil' doesn't have a default value"
-                throw new Exception("Você deve selecionar pelo menos um perfil de acesso.");
-            }
-            // --- FIM DA CORREÇÃO ---
-
+            $stmtIns = $pdo->prepare('INSERT INTO usuario_perfis (id_usuario, id_perfil) VALUES (?, ?)');
             
-            $stmtIns = $pdo->prepare('INSERT INTO usuario_perfis (id_usuario, id_perfil) VALUES (:uid, :pid)');
-            
-            // 3. Itera sobre o array "limpo"
             foreach ($perfisLimpos as $perfil_id) {
-                // Esta linha agora só recebe IDs válidos
-                $stmtIns->execute(['uid' => $this->id, 'pid' => $perfil_id]);
+                $stmtIns->execute([$this->id, (int)$perfil_id]);
             }
             
             $pdo->commit();
@@ -176,7 +140,7 @@ class Usuario
 
         } catch (Exception $e) {
             $pdo->rollBack();
-            throw $e; // Lança o erro para o Controller
+            throw $e; 
         }
     }
 }

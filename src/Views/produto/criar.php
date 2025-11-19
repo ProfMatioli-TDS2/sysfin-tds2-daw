@@ -18,8 +18,8 @@
             <input type="number" name="preco_venda" id="preco_venda" class="form-control" step="0.01" min="0" required>
         </div>
         <div class="col-md-6 mb-3">
-            <label for="estoque" class="form-label">Estoque Inicial:</label>
-            <input type="number" name="estoque" id="estoque" class="form-control" min="0" required>
+            <label for="estoque_atual" class="form-label">Estoque Inicial:</label>
+            <input type="number" name="estoque_atual" id="estoque_atual" class="form-control" min="0" required>
         </div>
         
         <div class="col-md-4 mb-3">

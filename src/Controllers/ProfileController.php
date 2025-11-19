@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 
+// 1. Importa o SessionManager
+use App\Core\SessionManager;
 use App\Models\Perfil;
 
 class ProfileController
@@ -10,6 +12,9 @@ class ProfileController
      */
     public function index()
     {
+        // 2. Proteção do Método
+        SessionManager::require_auth(['Administrador']);
+        
         $perfis = Perfil::getAll();
         $error = $_GET['error'] ?? null;
         
@@ -21,6 +26,9 @@ class ProfileController
      */
     public function create()
     {
+        // 2. Proteção do Método
+        SessionManager::require_auth(['Administrador']);
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $perfil = new Perfil();
             $perfil->nome = $_POST['nome'];
@@ -37,6 +45,9 @@ class ProfileController
      */
     public function edit($id)
     {
+        // 2. Proteção do Método
+        SessionManager::require_auth(['Administrador']);
+        
         $perfil = Perfil::getById($id);
         if (!$perfil) {
             header('Location: ' . BASE_URL . '/index.php?url=/profiles');
@@ -58,6 +69,9 @@ class ProfileController
      */
     public function delete($id)
     {
+        // 2. Proteção do Método
+        SessionManager::require_auth(['Administrador']);
+        
         // Regra: Não excluir perfis padrão (1, 2, 3 do PDF)
         if ($id <= 3) {
             $errorMsg = "Erro: Perfis padrão (Administrador, Tesoureiro, Vendedor) não podem ser excluídos.";

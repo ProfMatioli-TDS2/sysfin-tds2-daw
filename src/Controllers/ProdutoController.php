@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 
+// 1. IMPORTA O SESSION MANAGER
+use App\Core\SessionManager;
 use App\Models\Produto;
 use Dompdf\Dompdf; // Importa o Dompdf
 use Dompdf\Options; // Importa o Options
@@ -9,6 +11,9 @@ class ProdutoController
 {
     public function index()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+        
         $nomeBusca = $_GET['busca'] ?? '';
         $produtos = $nomeBusca ? Produto::searchByName($nomeBusca) : Produto::getAll();
         
@@ -18,6 +23,9 @@ class ProdutoController
 
     public function create()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador']);
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $produto = new Produto();
             $produto->nome = $_POST['nome'];
@@ -40,6 +48,9 @@ class ProdutoController
 
     public function edit($id)
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador']);
+        
         $produto = Produto::getById($id);
 
         if (!$produto) {
@@ -68,6 +79,9 @@ class ProdutoController
 
     public function delete($id)
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador']);
+        
         // AINDA FALTA: A regra de verificar se o produto foi usado.
         // Por enquanto, apenas exclui:
         Produto::delete($id);
@@ -80,6 +94,9 @@ class ProdutoController
      */
     public function report()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+        
         $produtos = Produto::getAll();
 
         // Carrega o HTML da view (relatorio.php) em uma variável

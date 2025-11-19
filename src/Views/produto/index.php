@@ -2,7 +2,10 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Gestão de Produtos</h1>
-    <a class="btn btn-primary" href="<?= BASE_URL ?>/index.php?url=/produtos/criar">Adicionar Produto</a>
+    
+    <?php if (\App\Core\SessionManager::hasRole('Administrador')): ?>
+        <a class="btn btn-primary" href="<?= BASE_URL ?>/index.php?url=/produtos/criar">Adicionar Produto</a>
+    <?php endif; ?>
 </div>
 
 <form method="GET" action="<?= BASE_URL ?>/index.php" class="mb-4">
@@ -32,8 +35,20 @@
                     <td>R$ <?= number_format($produto->preco_venda, 2, ',', '.') ?></td>
                     <td><?= $produto->estoque ?></td>
                     <td>
-                        <a class="btn btn-warning btn-sm" href="<?= BASE_URL ?>/index.php?url=/produtos/editar/<?= $produto->id ?>">Editar</a>
-                        <a class="btn btn-danger btn-sm" href="<?= BASE_URL ?>/index.php?url=/produtos/excluir/<?= $produto->id ?>" onclick="return confirm('Tem certeza que deseja excluir este produto?')">Excluir</a>
+                        <?php if (\App\Core\SessionManager::hasRole('Administrador')): ?>
+                            <a class="btn btn-warning btn-sm" href="<?= BASE_URL ?>/index.php?url=/produtos/editar/<?= $produto->id ?>">Editar</a>
+                            
+                            <form method="POST" 
+                                  action="<?php echo BASE_URL; ?>/index.php?url=/produtos/excluir/<?php echo $produto->id; ?>" 
+                                  style="display: inline;"
+                                  onsubmit="return confirm('Tem certeza que deseja excluir este produto?');">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Excluir
+                                </button>
+                            </form>
+                        <?php else: ?>
+                            <span class="text-muted">Acesso restrito</span>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>

@@ -29,9 +29,14 @@
                            class="btn btn-warning btn-sm">Editar</a>
                         
                         <?php if ($perfil->id > 3): // Protege os perfis 1, 2, 3 ?>
-                        <a href="<?php echo BASE_URL; ?>/index.php?url=/profiles/delete/<?php echo $perfil->id; ?>" 
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</a>
+                            <form method="POST" 
+                                  action="<?php echo BASE_URL; ?>/index.php?url=/profiles/delete/<?php echo $perfil->id; ?>" 
+                                  style="display: inline;"
+                                  onsubmit="return confirm('Tem certeza que deseja excluir este perfil?');">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Excluir
+                                </button>
+                            </form>
                         <?php endif; ?>
                     </td>
                 </tr>

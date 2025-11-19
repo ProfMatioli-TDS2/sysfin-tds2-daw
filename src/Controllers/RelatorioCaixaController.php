@@ -1,7 +1,11 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\MovimentoCaixa;
+// 1. IMPORTA O SESSION MANAGER
+use App\Core\SessionManager;
+use App\Core\Database;
+// CORREÇÃO: Importando a classe MovimentoCaixa, que contém a lógica de relatório.
+use App\Models\MovimentoCaixa; 
 
 class RelatorioCaixaController
 {
@@ -10,6 +14,9 @@ class RelatorioCaixaController
      */
     public function index()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+        
         // Dados padrão para a view (quando a página é carregada)
         $data = [
             'dataInicial' => '',
@@ -27,9 +34,11 @@ class RelatorioCaixaController
             $dataFinal = $_POST['data_final'] ?? date('Y-m-d');
             
             // 1. REQUISITO #2a: Buscar Saldo Anterior
+            // CORREÇÃO AQUI: Usando MovimentoCaixa::
             $saldoAnterior = MovimentoCaixa::getSaldoAnterior($dataInicial);
             
             // 2. REQUISITO #2b: Buscar Movimentações no Período
+            // CORREÇÃO AQUI: Usando MovimentoCaixa::
             $movimentacoes = MovimentoCaixa::getMovimentacoesPorPeriodo($dataInicial, $dataFinal);
             
             // 3. REQUISITO #2c: Calcular Totais do Período

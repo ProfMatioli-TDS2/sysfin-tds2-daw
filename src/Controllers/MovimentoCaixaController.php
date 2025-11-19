@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 
+// 1. IMPORTA O SESSION MANAGER
+use App\Core\SessionManager;
 use App\Core\Database;
 use App\Models\MovimentoCaixaModel;
 
@@ -8,6 +10,10 @@ class MovimentoCaixaController
 {
     public function index()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        // Exige que o usuário esteja logado (qualquer perfil)
+        SessionManager::require_auth();
+        
         // obtém conexão (ajuste para seu método atual)
         $db = Database::getConnection();
 

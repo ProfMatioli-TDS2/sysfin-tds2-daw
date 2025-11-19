@@ -2,7 +2,6 @@
 
 <div class="container">
     <h1 class="my-4">
-        <!-- CORREÇÃO: (isset($usuario) && $usuario->id) -->
         <?php echo (isset($usuario) && $usuario->id) ? 'Editar Usuário' : 'Novo Usuário'; ?>
     </h1>
 
@@ -13,23 +12,23 @@
     <?php endif; ?>
 
     <?php
-    // CORREÇÃO: (isset($usuario) && $usuario->id)
     $actionUrl = (isset($usuario) && $usuario->id)
         ? BASE_URL . '/index.php?url=/users/editar/' . $usuario->id
         : BASE_URL . '/index.php?url=/users/criar';
     
+    // O Controller agora passa $usuario preenchido (com POST) em caso de erro
     $nome = $usuario->nome ?? '';
     $login = $usuario->login ?? '';
     $ativo = $usuario->ativo ?? 1; 
+    
+    // O Controller agora passa $perfisDoUsuario preenchido (com POST) em caso de erro
     $perfisDoUsuario = $perfisDoUsuario ?? []; 
     
-    // CORREÇÃO: Senha obrigatória se não houver ID
     $senhaObrigatoria = (!isset($usuario) || !$usuario->id) ? 'required' : '';
     ?>
 
     <form method="POST" action="<?php echo $actionUrl; ?>" id="userForm">
         <div class="row g-3">
-            <!-- (Campos de nome, login, senha) -->
             <div class="col-md-6">
                 <label for="nome" class="form-label">Nome Completo</label>
                 <input type="text" class="form-control" id="nome" name="nome"
@@ -49,14 +48,15 @@
                 <?php endif; ?>
             </div>
 
-            <!-- (Checkboxes de Perfis) -->
             <div class="col-md-12">
                 <label class="form-label">Perfis de Acesso (Selecione pelo menos um)</label>
                 <?php foreach ($perfisDisponiveis as $perfil): ?>
                     <?php
-                    // Pré-seleciona os perfis que o usuário já tem (no POST ou do banco)
-                    $postPerfis = $_POST['perfis'] ?? [];
-                    $checked = in_array($perfil->id, $perfisDoUsuario) || in_array($perfil->id, $postPerfis) ? 'checked' : '';
+                    // --- INÍCIO DA CORREÇÃO ---
+                    // REMOVIDA A LEITURA DO $_POST.
+                    // A View agora confia 100% na variável $perfisDoUsuario vinda do Controller.
+                    $checked = in_array($perfil->id, $perfisDoUsuario) ? 'checked' : '';
+                    // --- FIM DA CORREÇÃO ---
                     ?>
                     <div class="form-check">
                         <input class="form-check-input check-perfil" type="checkbox" name="perfis[]" 
@@ -73,7 +73,6 @@
                 </div>
             </div>
 
-            <!-- (Switch 'Ativo') -->
             <div class="col-md-12">
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="ativo" 
@@ -90,7 +89,6 @@
 
 <?php require __DIR__ . '/../layout/footer.php'; ?>
 
-<!-- Script de validação (Frontend) -->
 <script>
 document.getElementById('userForm').addEventListener('submit', function(event) {
     const checkboxes = document.querySelectorAll('.check-perfil');

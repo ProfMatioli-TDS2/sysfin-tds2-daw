@@ -13,7 +13,8 @@
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="/fornecedores/criar" class="row g-3">
+    <!-- CORRIGIDO: action do formulário -->
+    <form method="POST" action="<?php echo BASE_URL; ?>/index.php?url=/fornecedores/criar" class="row g-3">
         <div class="col-md-6">
             <label for="nome" class="form-label">Nome:</label>
             <input type="text" name="nome" id="nome"
@@ -44,6 +45,7 @@
 
         <div class="col-12">
             <button type="submit" class="btn btn-success">Salvar</button>
+             <a href="<?php echo BASE_URL; ?>/index.php?url=/fornecedores" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Core\Database;
@@ -14,12 +13,44 @@ class Venda
     public $valor_total;
     public $itens = [];
 
+    public static function getByPeriodo($inicio, $fim)
+    {
+        $pdo = Database::getConnection(); 
+        $stmt = $pdo->prepare("
+            SELECT v.id, c.nome AS cliente, v.data_venda, v.valor_total
+            FROM vendas v
+            JOIN clientes c ON v.id_cliente = c.id
+            WHERE v.data_venda BETWEEN :inicio AND :fim
+            ORDER BY v.data_venda ASC
+        ");
+        $stmt->execute(['inicio' => $inicio, 'fim' => $fim]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function save()
     {
         $pdo = Database::getConnection();
 
         try {
             $pdo->beginTransaction();
+
+            // CORREÇÃO: Calcular o valor total aqui no backend
+            $valorTotalCalculado = 0;
+            foreach ($this->itens as $item) {
+                // (Validação extra) Verificar se o preço enviado é válido
+                $produto = Produto::getById($item['id_produto']);
+                if (!$produto) {
+                    throw new Exception("Produto ID {$item['id_produto']} não encontrado.");
+                }
+                
+                // (Validação extra) Verificar se o preço de venda não foi adulterado para negativo
+                $valorUnitario = (float) $item['valor_unitario'];
+                if ($valorUnitario < 0) $valorUnitario = 0; // Permite desconto, mas não negativo
+                
+                $valorTotalCalculado += $item['quantidade'] * $valorUnitario;
+            }
+            $this->valor_total = $valorTotalCalculado;
+
 
             $stmtVenda = $pdo->prepare(
                 "INSERT INTO vendas (id_cliente, data_venda, valor_total) VALUES (?, NOW(), ?)"
@@ -35,6 +66,12 @@ class Venda
             );
 
             foreach ($this->itens as $item) {
+                // Validação de Estoque (Segurança no Backend)
+                $produto = Produto::getById($item['id_produto']);
+                if ($item['quantidade'] > $produto->estoque) {
+                    throw new Exception("Estoque insuficiente para o produto: " . $produto->nome);
+                }
+                
                 $stmtItem->execute([
                     $this->id,
                     $item['id_produto'],
@@ -42,18 +79,21 @@ class Venda
                     $item['valor_unitario']
                 ]);
 
+                // Baixa no estoque
                 $stmtEstoque->execute([
                     $item['quantidade'],
                     $item['id_produto']
                 ]);
             }
 
+            // BUG CRÍTICO CORRIGIDO (Tarefa #9)
+            // Faltava o id_plano_de_contas (ID 1 = Receita de Vendas)
             $stmtCaixa = $pdo->prepare(
-                "INSERT INTO movimento_caixa (data_movimento, descricao, id_plano_de_contas, tipo, valor, id_venda) VALUES (NOW(), ?, ?, 'E', ?, ?)"
+                "INSERT INTO movimento_caixa (data_movimento, descricao, id_plano_de_contas, tipo, valor, id_venda) 
+                 VALUES (NOW(), ?, 1, 'E', ?, ?)"
             );
             $stmtCaixa->execute([
                 "Receita da Venda #" . $this->id,
-                1,
                 $this->valor_total,
                 $this->id
             ]);

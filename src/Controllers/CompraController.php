@@ -1,6 +1,9 @@
 <?php 
 namespace App\Controllers;
 
+// 1. Incluir as classes que vamos usar
+use App\Core\Database;
+use App\Core\SessionManager; // (Já estava no seu código, agora será usado)
 use App\Models\Compra;
 
 class CompraController
@@ -27,31 +30,30 @@ class CompraController
         }
     }
 
-    public function registrar() {
+    /**
+     * Tela de Registro de Compra
+     */
+    public function registrar()
+    {
+        // Proteção de acesso (Permitido para Admin, Tesoureiro e Vendedor)
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+
         $data = [
             'fornecedores' => \App\Models\Fornecedor::getAll(),
             'produtos' => \App\Models\Produto::getAll(),
         ];
-        $this->renderView('compras/registrar', $data);
-        
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $idFornecedor = $_POST['id_fornecedor'];
-            $itens = $_POST['itens'];
-            $valorTotal = $_POST['valor_total'];
 
-            try {
-                Compra::registrarCompra($idFornecedor, $itens, $valorTotal);
-                exit;
-            } catch (\Exception $e) {
-                echo "<h3>Erro: " . $e->getMessage() . "</h3>";
-            }
-        } else {
-            require __DIR__ . '/../Views/compras/registrar.php';
-        }
+        $this->renderView('compras/registrar', $data);
     }
 
+    /**
+     * Método de Relatório (já concluído na tarefa anterior)
+     */
     public function report()
     {
+        // Proteção de acesso (Permitido para Admin e Tesoureiro)
+        SessionManager::require_auth(['Administrador', 'Tesoureiro']);
+
         $data = [
             'compras' => [], 
             'totalCompras' => 0, 
@@ -59,7 +61,6 @@ class CompraController
             'dataInicial' => '', 
             'dataFinal' => ''
         ];
-        
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $dataInicial = $_POST['data_inicial'] ?? '';
@@ -74,10 +75,7 @@ class CompraController
 
                 
                 $totalCompras = count($compras);
-                
-                
                 $valorTotal = array_sum(array_column($compras, 'valor_total'));
-                
                 
                 $data = [
                     'compras' => $compras, 
@@ -85,7 +83,7 @@ class CompraController
                     'valorTotal' => $valorTotal, 
                     'dataInicial' => $dataInicial, 
                     'dataFinal' => $dataFinal
-                ];
+                ]; 
             }
         }
 

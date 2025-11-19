@@ -1,6 +1,12 @@
 <?php
 // Retorna uma função que define todas as rotas para o dispatcher
 return function (FastRoute\RouteCollector $r) {
+    
+    // === ROTAS DE AUTENTICAÇÃO ===
+    $r->addRoute(['GET', 'POST'], '/login', ['App\Controllers\AuthController', 'login']);
+    $r->addRoute('POST', '/auth', ['App\Controllers\AuthController', 'auth']);
+    $r->addRoute('GET', '/logout', ['App\Controllers\AuthController', 'logout']);
+
     //home;
     $r->addRoute('GET', '/', ['App\Controllers\MovimentoCaixaController', 'index']);
         
@@ -18,7 +24,6 @@ return function (FastRoute\RouteCollector $r) {
     $r->addRoute('POST', '/fornecedores/excluir/{id:\d+}', ['App\Controllers\FornecedorController', 'delete']);
     $r->addRoute('GET', '/fornecedores/relatorio', ['App\Controllers\FornecedorController', 'report']);
 
-
     //plano de contas;
     $r->addRoute('GET', '/plano-contas', [ 'App\Controllers\PlanoContaController', 'index']);
     $r->addRoute(['GET', 'POST'], '/plano-contas/criar', ['App\Controllers\PlanoContaController', 'create']);
@@ -31,33 +36,39 @@ return function (FastRoute\RouteCollector $r) {
     $r->addRoute(['GET', 'POST'], '/compras/registrar', ['App\Controllers\CompraController', 'registrar']);
     $r->addRoute(['GET', 'POST'], '/compras/relatorio', ['App\Controllers\CompraController', 'report']);
 
-    //produtos; essa é a parte de produtos
+    //produtos;
     $r->addRoute('GET', '/produtos', ['App\Controllers\ProdutoController', 'index']);
     $r->addRoute(['GET', 'POST'], '/produtos/criar', ['App\Controllers\ProdutoController', 'create']);
     $r->addRoute(['GET', 'POST'], '/produtos/editar/{id:\d+}', ['App\Controllers\ProdutoController', 'edit']);
-    $r->addRoute('GET', '/produtos/excluir/{id:\d+}', ['App\Controllers\ProdutoController', 'delete']);
+    $r->addRoute('POST', '/produtos/excluir/{id:\d+}', ['App\Controllers\ProdutoController', 'delete']); // CORRIGIDO PARA POST
     $r->addRoute('GET', '/relatorio-produtos', ['App\Controllers\ProdutoController', 'report']);
+    
     //vendas
     $r->addRoute('GET', '/vendas', ['App\Controllers\VendaController', 'index']);
     $r->addRoute(['GET', 'POST'], '/vendas/create', ['App\Controllers\VendaController', 'create']);
     $r->addRoute('GET', '/vendas/details/{id:\d+}', ['App\Controllers\VendaController', 'details']);
-    $r->addRoute('GET', '/vendas/relatorio', ['App\Controllers\VendaController', 'report']);
-  
+    
+    // CORRIGIDO: Rota de Relatório de Vendas agora aceita GET e POST
+    $r->addRoute(['GET', 'POST'], '/vendas/relatorio', ['App\Controllers\VendaController', 'report']);
+    
+    //Lançamento Manual
+    $r->addRoute(['GET', 'POST'], '/lancamento-manual-caixa', ['App\Controllers\LancamentoCaixaController', 'create']);
+ 
     // Estoque
     $r->addRoute('GET', '/relatorio-estoque', ['App\Controllers\RelatorioEstoqueController', 'index']);
+
+    // Relatório de Movimento de Caixa
+    $r->addRoute(['GET', 'POST'], '/relatorio-movimento-caixa', ['App\Controllers\RelatorioCaixaController', 'index']);
 
     //profiles
     $r->addRoute('GET', '/profiles', ['App\Controllers\ProfileController', 'index']);
     $r->addRoute(['GET', 'POST'], '/profiles/criar', ['App\Controllers\ProfileController', 'create']);
     $r->addRoute(['GET', 'POST'], '/profiles/editar/{id:\d+}', ['App\Controllers\ProfileController', 'edit']);
-    $r->addRoute('GET', '/profiles/delete/{id:\d+}', ['App\Controllers\ProfileController', 'delete']);
+    $r->addRoute('POST', '/profiles/delete/{id:\d+}', ['App\Controllers\ProfileController', 'delete']); // CORRIGIDO PARA POST
 
     //users
     $r->addRoute('GET', '/users', ['App\Controllers\UserController', 'index']);
     $r->addRoute(['GET', 'POST'], '/users/criar', ['App\Controllers\UserController', 'create']);
     $r->addRoute(['GET', 'POST'], '/users/editar/{id:\d+}', ['App\Controllers\UserController', 'edit']);
-    $r->addRoute('GET', '/users/delete/{id:\d+}', ['App\Controllers\UserController', 'delete']);
-
-    //relatorio movimento de caixa
-    $r->addRoute('GET', '/relatorio-movimento-caixa', ['App\Controllers\RelatorioMovimentoCaixaController', 'index']);
+    $r->addRoute('POST', '/users/delete/{id:\d+}', ['App\Controllers\UserController', 'delete']); // CORRIGIDO PARA POST
 };

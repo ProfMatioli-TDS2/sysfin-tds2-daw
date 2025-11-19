@@ -1,35 +1,56 @@
 <?php
 namespace App\Controllers;
 
+// 1. IMPORTA O SESSION MANAGER
+use App\Core\SessionManager;
 use App\Models\Produto;
+use Dompdf\Dompdf; // Importa o Dompdf
+use Dompdf\Options; // Importa o Options
 
 class ProdutoController
 {
     public function index()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+        
         $nomeBusca = $_GET['busca'] ?? '';
         $produtos = $nomeBusca ? Produto::searchByName($nomeBusca) : Produto::getAll();
+        
+        // Corrigido para o caminho correto da sua View (baseado no CRUD de Clientes)
         require __DIR__ . '/../Views/produto/index.php';
     }
 
     public function create()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador']);
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $produto = new Produto();
             $produto->nome = $_POST['nome'];
             $produto->descricao = $_POST['descricao'];
             $produto->preco_venda = $_POST['preco_venda'];
-            $produto->estoque = $_POST['estoque'];
+            
+            // REGRA DE NEGÓCIO: O estoque (estoque_atual) só é definido na criação.
+            $produto->estoque = $_POST['estoque_atual']; // Assumindo 'estoque_atual' no form
+            
             $produto->estoque_minimo = $_POST['estoque_minimo'];
             $produto->save();
+            
             header('Location: ' . BASE_URL . '/index.php?url=/produtos');
             exit;
         }
+        
+        // Corrigido para o caminho correto da sua View
         require __DIR__ . '/../Views/produto/criar.php';
     }
 
     public function edit($id)
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador']);
+        
         $produto = Produto::getById($id);
 
         if (!$produto) {
@@ -41,27 +62,60 @@ class ProdutoController
             $produto->nome = $_POST['nome'];
             $produto->descricao = $_POST['descricao'];
             $produto->preco_venda = $_POST['preco_venda'];
+            
+            // REGRA DE NEGÓCIO: O estoque (estoque_atual) NÃO é alterado na edição.
+            // Apenas o estoque_minimo é permitido.
             $produto->estoque_minimo = $_POST['estoque_minimo'];
+            
             $produto->save();
+            
             header('Location: ' . BASE_URL . '/index.php?url=/produtos');
             exit;
         }
+        
+        // Corrigido para o caminho correto da sua View
         require __DIR__ . '/../Views/produto/editar.php';
     }
 
     public function delete($id)
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador']);
+        
+        // AINDA FALTA: A regra de verificar se o produto foi usado.
+        // Por enquanto, apenas exclui:
         Produto::delete($id);
         header('Location: ' . BASE_URL . '/index.php?url=/produtos');
         exit;
     }
 
+    /**
+     * CORRIGIDO: Agora o Controller gera o PDF
+     */
     public function report()
     {
+        // 2. PROTEÇÃO DO MÉTODO
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+        
         $produtos = Produto::getAll();
+
+        // Carrega o HTML da view (relatorio.php) em uma variável
+        ob_start();
+        // O template do relatório (próximo arquivo)
         require __DIR__ . '/../Views/produto/relatorio.php';
+        $html = ob_get_clean();
+
+        // Configura o Dompdf
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        
+        // Envia o PDF para o navegador
+        $dompdf->stream("relatorio_produtos.pdf", ["Attachment" => false]);
     }
-
-
-    
 }

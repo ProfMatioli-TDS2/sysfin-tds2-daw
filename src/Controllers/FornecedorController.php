@@ -1,26 +1,19 @@
 <?php
 namespace App\Controllers;
 
+// Importa o SessionManager
+use App\Core\SessionManager; 
 use App\Models\Fornecedor;
+use Dompdf\Dompdf; 
+use Dompdf\Options; 
 
 class FornecedorController
 {
-    private function verificarAdministrador()
-    {
-        session_start();
-        $_SESSION['perfil'] = 'Administrador'; // Apenas para testes
-
-        if (!isset($_SESSION['perfil']) || $_SESSION['perfil'] !== 'Administrador') {
-            http_response_code(403);
-            echo "Acesso negado.";
-            exit;
-        }
-    }
-
     public function index()
     {
-        $this->verificarAdministrador();
-
+        // Proteção de acesso
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+        
         $nome = $_GET['busca'] ?? '';
         $fornecedores = $nome ? Fornecedor::searchByName($nome) : Fornecedor::getAll();
 
@@ -29,42 +22,19 @@ class FornecedorController
 
     public function create()
     {
-        $this->verificarAdministrador();
-        $erros = [];
-
+        // Proteção de acesso (Vendedor não pode cadastrar)
+        SessionManager::require_auth(['Administrador']);
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nome = $_POST['nome'] ?? '';
-            $cnpj = $_POST['cnpj'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $telefone = $_POST['telefone'] ?? '';
+            $fornecedor = new Fornecedor();
+            $fornecedor->nome = $_POST['nome'];
+            $fornecedor->cnpj = $_POST['cnpj'];
+            $fornecedor->email = $_POST['email'];
+            $fornecedor->telefone = $_POST['telefone'];
+            $fornecedor->save();
 
-            if (empty($nome)) {
-                $erros['nome'] = "O campo Nome é obrigatório.";
-            }
-
-            if (empty($cnpj) || !$this->validarCNPJ($cnpj)) {
-                $erros['cnpj'] = "CNPJ inválido ou não preenchido.";
-            }
-
-            if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $erros['email'] = "Email inválido ou não preenchido.";
-            }
-
-            if (empty($telefone) || !preg_match('/^\(\d{2}\) \d{5}-\d{4}$/', $telefone)) {
-                $erros['telefone'] = "Telefone inválido ou não preenchido. Use o formato (XX) XXXXX-XXXX.";
-            }
-
-            if (empty($erros)) {
-                $fornecedor = new Fornecedor();
-                $fornecedor->nome = $nome;
-                $fornecedor->cnpj = $cnpj;
-                $fornecedor->email = $email;
-                $fornecedor->telefone = $telefone;
-                $fornecedor->save();
-
-                header('Location: ' . BASE_URL . '/index.php?url=/fornecedores');
-                exit;
-            }
+            header('Location: ' . BASE_URL . '/index.php?url=/fornecedores');
+            exit;
         }
 
         require __DIR__ . '/../Views/fornecedores/criar.php';
@@ -72,9 +42,10 @@ class FornecedorController
 
     public function edit($id)
     {
-        $this->verificarAdministrador();
+        // Proteção de acesso (Vendedor não pode editar)
+        SessionManager::require_auth(['Administrador']);
+        
         $fornecedor = Fornecedor::getById($id);
-        $erros = [];
 
         if (!$fornecedor) {
             http_response_code(404);
@@ -83,37 +54,14 @@ class FornecedorController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nome = $_POST['nome'] ?? '';
-            $cnpj = $_POST['cnpj'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $telefone = $_POST['telefone'] ?? '';
+            $fornecedor->nome = $_POST['nome'];
+            $fornecedor->cnpj = $_POST['cnpj'];
+            $fornecedor->email = $_POST['email'];
+            $fornecedor->telefone = $_POST['telefone'];
+            $fornecedor->save();
 
-            if (empty($nome)) {
-                $erros['nome'] = "O campo Nome é obrigatório.";
-            }
-
-            if (empty($cnpj) || !$this->validarCNPJ($cnpj)) {
-                $erros['cnpj'] = "CNPJ inválido ou não preenchido.";
-            }
-
-            if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $erros['email'] = "Email inválido ou não preenchido.";
-            }
-
-            if (empty($telefone) || !preg_match('/^\(\d{2}\) \d{5}-\d{4}$/', $telefone)) {
-                $erros['telefone'] = "Telefone inválido ou não preenchido. Use o formato (XX) XXXXX-XXXX.";
-            }
-
-            if (empty($erros)) {
-                $fornecedor->nome = $nome;
-                $fornecedor->cnpj = $cnpj;
-                $fornecedor->email = $email;
-                $fornecedor->telefone = $telefone;
-                $fornecedor->save();
-
-                header('Location: ' . BASE_URL . '/index.php?url=/fornecedores');
-                exit;
-            }
+            header('Location: ' . BASE_URL . '/index.php?url=/fornecedores');
+            exit;
         }
 
         require __DIR__ . '/../Views/fornecedores/editar.php';
@@ -121,8 +69,9 @@ class FornecedorController
 
     public function delete($id)
     {
-        $this->verificarAdministrador();
-
+        // Proteção de acesso (Vendedor não pode excluir)
+        SessionManager::require_auth(['Administrador']);
+        
         Fornecedor::delete($id);
 
         header('Location: ' . BASE_URL . '/index.php?url=/fornecedores');
@@ -131,30 +80,25 @@ class FornecedorController
 
     public function report()
     {
-        $this->verificarAdministrador();
-
+        // Proteção de acesso
+        SessionManager::require_auth(['Administrador', 'Tesoureiro', 'Vendedor']);
+        
         $fornecedores = Fornecedor::getAll();
 
+        ob_start();
         require __DIR__ . '/../Views/fornecedores/relatorio.php';
+        $html = ob_get_clean();
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        
+        $dompdf->stream("relatorio_fornecedores.pdf", ["Attachment" => false]);
     }
 
-    private function validarCNPJ($cnpj)
-    {
-        $cnpj = preg_replace('/[^0-9]/', '', $cnpj);
-
-        if (strlen($cnpj) != 14) return false;
-        if (preg_match('/^(.)\1*$/', $cnpj)) return false;
-
-        for ($t = 12; $t < 14; $t++) {
-            $d = 0;
-            for ($m = $t - 7, $i = 0; $i < $t; $i++) {
-                $d += $cnpj[$i] * $m;
-                $m = ($m == 2) ? 9 : $m - 1;
-            }
-            $d = ((10 * $d) % 11) % 10;
-            if ($cnpj[$t] != $d) return false;
-        }
-
-        return true;
-    }
 }
